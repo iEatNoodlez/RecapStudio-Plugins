@@ -117,6 +117,22 @@
    "chapters": false
   },
   {
+   "id": "kitsu",
+   "kind": "source",
+   "name": "Kitsu",
+   "version": "1.0.0",
+   "file": "sources/kitsu.py",
+   "sha256": "d0b3e5d53dc1312baf8e0b342bc7c0ba38370679a03d27a69623f9494e54c018",
+   "summary": "Series details and characters for Recap Studio, from Kitsu's public API (no account or key needed).",
+   "sites": [
+    "kitsu.app",
+    "kitsu.io"
+   ],
+   "language": "en",
+   "nsfw": false,
+   "chapters": false
+  },
+  {
    "id": "mangaupdates",
    "kind": "source",
    "name": "MangaUpdates",

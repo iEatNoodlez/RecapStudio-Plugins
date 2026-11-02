@@ -6,7 +6,7 @@ They run against a Recap Studio checkout (its source, or the dev copy), with tha
 D:\RecapStudio\.venv\Scripts\python tests\run.py --app D:\RecapStudio
 python tests\run.py                         # with Recap Studio beside this repository (..\App, ..\RecapStudio)
 python tests\run.py youtube spanish         # only the tests whose names have these words
-python tests\run.py --network               # also the ones that ask real services (AniList, MangaUpdates)
+python tests\run.py --network               # also the ones that ask real services (AniList, Kitsu, MangaUpdates)
 ```
 
 Each test makes a scratch data folder of its own (in the temp folder: removed when every check passed, kept and named when one failed), copies in the plugins it tests (as they are in `features/` and `sources/`, not the zips) and runs the app's server in its own process. Make the recap's steps are swapped for a stand-in where a test needs jobs that finish, fail or stop to ask on cue. Nothing reaches Google: `fake_google.py` stands in for its sign-in and YouTube's API.
@@ -15,6 +15,7 @@ Each test makes a scratch data folder of its own (in the temp folder: removed wh
 |---|---|
 | `test_list.py` | `index.json` is what `tools/build.py` makes (nobody forgot to build), its files match their checksums, every plugin loads in the app |
 | `test_anilist.py` | AniList's clean-up of descriptions, the source as the app sees it, Find the series loading; with `--network`, a real search and its characters |
+| `test_kitsu.py` | Kitsu's kinds, links and descriptions' clean-up, the source as the app sees it (characters, no chapters); with `--network`, a real search (novels left out), a series' characters and a webtoon it lists none for |
 | `test_mangaupdates.py` | MangaUpdates' links (base-36 ids), kinds and descriptions, the source as the app sees it (no chapters, no characters); with `--network`, a real search (novels left out) and a series' details |
 | `test_new_chapters.py` | New chapters on a schedule, against a made-up source with pictures served on this PC: the schedule's times, each project's choice (not checked, counted, got, recapped alone, recapped whole), a project with a job running, a source that's down, a time missed while the app was closed, nothing got twice |
 | `test_when_done.py` | When a video is done, with a stand-in for ntfy and a webhook: the copy (a folder per project, subtitles, thumbnail, Shorts, nothing half-named), the command (its places quoted, its variables), the phone told (done, stopped to ask once, failed), Discord's and Slack's shapes, a project left out, Do it now, the test button, the command refused from a web page |

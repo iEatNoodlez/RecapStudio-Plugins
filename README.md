@@ -6,6 +6,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 |---|---|---|
 | **Find the series** | Series lookup | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
 | **AniList** | Series details source | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
+| **Kitsu** | Series details source | Search, series details and characters from [Kitsu's public API](https://kitsu.docs.apiary.io) (no account or key). Much of its character data came from MyAnimeList, so it stands in for it. Its characters are thorough for older and well-known Japanese manga, and missing for most newer series and webtoons. |
 | **MangaUpdates** | Series details source | Search and series details from [MangaUpdates' public API](https://api.mangaupdates.com) (no account or key). It lists nearly every series that has been scanlated, so it finds many AniList doesn't have. It has no characters. |
 | **Overnight queue** | Automation | Several projects' Make the recap, one after another, from a start time to a stop time. A project that stops to ask you something is left for the morning. In the sidebar. |
 | **Watched folder** | Automation | Chapters dropped into a folder named after their project are added to it and, if you like, recapped. In Settings. |
@@ -34,7 +35,7 @@ The docs are in the app's repository: [Plugins](https://github.com/iEatNoodlez/R
 ## What goes on this list
 
 - **Plugins that add features** (`features/<id>/`): only this list can install them, since they run inside the app with all its access.
-- **Sources for services with public APIs** (`sources/<id>.py`): series details and characters, like AniList and MangaUpdates.
+- **Sources for services with public APIs** (`sources/<id>.py`): series details and characters, like AniList, Kitsu and MangaUpdates.
 - **No scrapers**: nothing that gets chapters from scan or aggregator sites. Those stay what members bring themselves (a plugin file, their own list, gallery-dl or Suwayomi). Keeping them off this list keeps a takedown from ever reaching it, or the plugins an edition of the app is built with. New chapters on a schedule gets nothing by itself: it checks through the sources a member added.
 
 ## Changing a plugin
@@ -48,4 +49,4 @@ How plugins are written (what `setup(plugin)` and the page script are given, and
 
 ## License
 
-MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use; MangaUpdates' asks to be credited, which Find the series does by naming each result's source).
+MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use; MangaUpdates' asks to be credited, which Find the series does by naming each result's source; Kitsu's is free, with no key).
