@@ -1,0 +1,5 @@
+# index.json's checksums are of these files exactly as committed (and the zips are built from features/): git never
+# changes their line endings
+sources/** -text
+features/** -text
+dist/** binary

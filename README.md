@@ -1,0 +1,28 @@
+# Recap Studio's plugins
+
+The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), made alongside the app. Recap Studio knows this list: **Settings → Plugins → Show the plugins** installs from it, and each file is checked against the SHA-256 in `index.json` first.
+
+| Plugin | Kind | What it does |
+|---|---|---|
+| **Find the series** | Adds to the app | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
+| **AniList** | Source (series details, no chapters) | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
+
+The docs are in the app's repository: [Plugins](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/plugins.md).
+
+## What goes on this list
+
+- **Plugins that add features** (`features/<id>/`): only this list can install them, since they run inside the app with all its access.
+- **Sources for services with public APIs** (`sources/<id>.py`): series details and characters, like AniList.
+- **No scrapers**: nothing that gets chapters from scan or aggregator sites. Those stay what members bring themselves (a plugin file, their own list, gallery-dl or Suwayomi). Keeping them off this list keeps a takedown from ever reaching it, or the plugins an edition of the app is built with.
+
+## Changing a plugin
+
+1. Change it, and raise its version: `VERSION` in a source, `version` in a feature's `plugin.json`. The app offers an update when the list's version differs from the one installed.
+2. Run `python tools/build.py`. It zips each feature plugin into `dist\` and writes `index.json` with every file's checksum. The zips come out the same every time, so a plugin that didn't change keeps its checksum.
+3. Commit `index.json` and `dist\` with the change.
+
+How plugins are written (what `setup(plugin)` and the page script are given, and the list's format) is in [docs/plugins.md](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/plugins.md#how-plugins-are-made) and, for sources, [docs/sources.md](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/sources.md#writing-a-plugin).
+
+## License
+
+MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use).

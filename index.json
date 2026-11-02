@@ -1,0 +1,30 @@
+{
+ "name": "Recap Studio's plugins",
+ "plugins": [
+  {
+   "id": "find-series",
+   "kind": "feature",
+   "name": "Find the series",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/find-series-1.0.0.zip",
+   "sha256": "16683850518a343a50114a6798a6e4e2f0fa36ecc6b219e832a3d64c91f789c3",
+   "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources."
+  },
+  {
+   "id": "anilist",
+   "kind": "source",
+   "name": "AniList",
+   "version": "1.0.0",
+   "file": "sources/anilist.py",
+   "sha256": "6cb273c8ead2c679aab06b8e8c9db7e52cf3418e5e2f052a264160ecbe5c6484",
+   "summary": "Series details and characters for Recap Studio, from AniList's public API (no account or key needed).",
+   "sites": [
+    "anilist.co"
+   ],
+   "language": "en",
+   "nsfw": false,
+   "chapters": false
+  }
+ ]
+}
