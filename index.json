@@ -22,6 +22,26 @@
    "summary": "Line up several projects and Make the recap runs them one after another, from a time you choose until a time you choose. A project that stops to ask you something is left for the morning."
   },
   {
+   "id": "reading-spanish",
+   "kind": "feature",
+   "name": "Reading Spanish comics",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/reading-spanish-1.0.0.zip",
+   "sha256": "3ae4b9412ed52fd7d19cb21337a5b20b8545998a3b271966be5b3fc5e19e826b",
+   "summary": "Comics in Spanish, read in Spanish and translated into English by your script writer, as Korean, Chinese and Japanese ones are. Downloads PaddleOCR's reader for Latin-alphabet text the first time (about 13 MB)."
+  },
+  {
+   "id": "recaps-in-spanish",
+   "kind": "feature",
+   "name": "Recaps in Spanish",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/recaps-in-spanish-1.0.0.zip",
+   "sha256": "641bcdd1dbcede207ad0011bf2d4bddf0bdcf4746896af2c01a310c7af4aefb4",
+   "summary": "A project's recap narrated in Spanish (Latin America or Spain): the script, the voice, the subtitles, the captions and the suggested YouTube title, whatever language the comic is in."
+  },
+  {
    "id": "watched-folder",
    "kind": "feature",
    "name": "Watched folder",

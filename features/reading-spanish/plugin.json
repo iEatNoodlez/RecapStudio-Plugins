@@ -1,0 +1,7 @@
+{
+  "id": "reading-spanish",
+  "name": "Reading Spanish comics",
+  "version": "1.0.0",
+  "api": 1,
+  "summary": "Comics in Spanish, read in Spanish and translated into English by your script writer, as Korean, Chinese and Japanese ones are. Downloads PaddleOCR's reader for Latin-alphabet text the first time (about 13 MB)."
+}
