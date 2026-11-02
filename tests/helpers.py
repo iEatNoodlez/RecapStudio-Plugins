@@ -73,6 +73,7 @@ class App:
         for pid in plugins:
             shutil.copytree(FEATURES / pid, self.data / "plugins" / pid, ignore=shutil.ignore_patterns("__pycache__"))
         for sid in sources:
+            (self.data / "plugins").mkdir(exist_ok=True)
             shutil.copy(SOURCES / f"{sid}.py", self.data / "plugins" / f"{sid}.py")
         (self.data / "settings.json").write_text(json.dumps({
             "setup_done": True, "check_updates": False, "projects_dir": str(self.data / "Projects"), **(settings or {})}),
@@ -135,9 +136,15 @@ class App:
 
 def done() -> None:
     print("ALL PASS" if not fails else f"{len(fails)} FAILED: {fails}", flush=True)
+    if "recap.sources" in sys.modules:  # source plugins' processes hold their logs open
+        sys.modules["recap.sources"].stop_all()
     for path in made:  # (kept to look at when something failed)
         if fails:
             print(f"(its files: {path})", flush=True)
         else:
-            shutil.rmtree(path, ignore_errors=True)
+            for _ in range(10):  # (a stopped process can hold a file a moment longer)
+                shutil.rmtree(path, ignore_errors=True)
+                if not path.exists():
+                    break
+                time.sleep(0.3)
     os._exit(1 if fails else 0)  # (the server's threads don't hold it open)

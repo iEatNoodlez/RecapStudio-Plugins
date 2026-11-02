@@ -2,6 +2,16 @@
  "name": "Recap Studio's plugins",
  "plugins": [
   {
+   "id": "branding",
+   "kind": "feature",
+   "name": "Branding",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/branding-1.0.0.zip",
+   "sha256": "480325356b141e349e47d66e7a6d8b4d7425e49a431e32f5c7cab925ae8276d6",
+   "summary": "Your channel's logo in a corner of every video, and an intro and an outro (a clip or a picture) before and after each part. Set once in Settings; each project can leave either out."
+  },
+  {
    "id": "epub-comics",
    "kind": "feature",
    "name": "EPUB comics",
@@ -20,6 +30,16 @@
    "file": "dist/find-series-1.0.0.zip",
    "sha256": "16683850518a343a50114a6798a6e4e2f0fa36ecc6b219e832a3d64c91f789c3",
    "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources."
+  },
+  {
+   "id": "new-chapters",
+   "kind": "feature",
+   "name": "New chapters on a schedule",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/new-chapters-1.0.0.zip",
+   "sha256": "6b7c48b0f759050c82cb74770c0efda516357b586e2ddad4af5d04e7a379504b",
+   "summary": "Checks your projects' series for new chapters on the days and at the time you choose, through the sources you added yourself, and gets them, and if you like recaps them."
   },
   {
    "id": "overnight-queue",
@@ -55,11 +75,21 @@
    "id": "watched-folder",
    "kind": "feature",
    "name": "Watched folder",
-   "version": "1.0.1",
+   "version": "1.0.2",
    "api": 1,
-   "file": "dist/watched-folder-1.0.1.zip",
-   "sha256": "fe42179666a322fa745704a0a5e782d8aadebc7727d14fe07b56c28f2378f600",
+   "file": "dist/watched-folder-1.0.2.zip",
+   "sha256": "c11cd733cafd532cf38e3ffefb50389b03649755ddb9f1b1c721061714babf4f",
    "summary": "Drop chapters (folders of pictures, .zip or .cbz) into a folder named after their project, and they're added to it and, if you like, recapped."
+  },
+  {
+   "id": "when-done",
+   "kind": "feature",
+   "name": "When a video is done",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/when-done-1.0.0.zip",
+   "sha256": "737013103864caa19b2745cc490f7d831f1ddd16c22f58faac2028f4985b7c8e",
+   "summary": "When a project's video is made: copies it (and its subtitles, thumbnail and Shorts) to a folder, runs a command of yours, and tells your phone through ntfy or a Discord or Slack webhook. It can also tell you when a recap stops to ask you something or fails."
   },
   {
    "id": "youtube-post",
@@ -81,6 +111,21 @@
    "summary": "Series details and characters for Recap Studio, from AniList's public API (no account or key needed).",
    "sites": [
     "anilist.co"
+   ],
+   "language": "en",
+   "nsfw": false,
+   "chapters": false
+  },
+  {
+   "id": "mangaupdates",
+   "kind": "source",
+   "name": "MangaUpdates",
+   "version": "1.0.0",
+   "file": "sources/mangaupdates.py",
+   "sha256": "d371fd9c2a31501cfd8902bed63797e88ed37a4df701818a84d29d440069ffc6",
+   "summary": "Series details for Recap Studio, from MangaUpdates' public API (no account or key needed).",
+   "sites": [
+    "mangaupdates.com"
    ],
    "language": "en",
    "nsfw": false,

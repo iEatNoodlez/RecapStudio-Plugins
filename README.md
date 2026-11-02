@@ -2,24 +2,40 @@
 
 The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), made alongside the app. Recap Studio knows this list: **Settings → Plugins → Show the plugins** installs from it, and each file is checked against the SHA-256 in `index.json` first.
 
-| Plugin | Kind | What it does |
+| Plugin | Type | What it does |
 |---|---|---|
-| **Find the series** | Adds to the app | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
-| **Overnight queue** | Adds to the app | Several projects' Make the recap, one after another, from a start time to a stop time. A project that stops to ask you something is left for the morning. In the sidebar. |
-| **Watched folder** | Adds to the app | Chapters dropped into a folder named after their project are added to it and, if you like, recapped. In Settings. |
-| **Post to YouTube** | Adds to the app | Posts a project's video to your channel (title, chapters, thumbnail, and if you like its subtitles and a playlist) and its Shorts, all at once or one a day: when the video is made, or from the Video tab. Adds a Posting step to New project. Needs your own Google OAuth client: see the wiki's [walkthrough](https://github.com/iEatNoodlez/RecapStudio-Plugins/wiki/Connecting-your-YouTube-channel). |
-| **Recaps in Spanish** | Adds to the app | A project's recap narrated in Spanish (Latin America or Spain): the script, the voice for each provider, the subtitles, the captions and the suggested title. In New project and Project settings. |
-| **Reading Spanish comics** | Adds to the app | Comics in Spanish read in Spanish (PaddleOCR's Latin-alphabet reader, downloaded the first time) and translated into English, as Korean, Chinese and Japanese ones are. |
-| **EPUB comics** | Adds to the app | Chapters imported from a comic's `.epub` (DRM-free), as from a `.cbz`: a volume is split into its chapters by its table of contents, leaving out its contents, copyright, advertisement and divider pages. With Import folder, dropped files and the Watched folder. |
-| **AniList** | Source (series details, no chapters) | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
+| **Find the series** | Series lookup | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
+| **AniList** | Series details source | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
+| **MangaUpdates** | Series details source | Search and series details from [MangaUpdates' public API](https://api.mangaupdates.com) (no account or key). It lists nearly every series that has been scanlated, so it finds many AniList doesn't have. It has no characters. |
+| **Overnight queue** | Automation | Several projects' Make the recap, one after another, from a start time to a stop time. A project that stops to ask you something is left for the morning. In the sidebar. |
+| **Watched folder** | Automation | Chapters dropped into a folder named after their project are added to it and, if you like, recapped. In Settings. |
+| **New chapters on a schedule** | Automation | Projects made from a site are checked for new chapters on the days and at the time you choose, through the sources you added yourself. Each project chooses: tell me, get them, or get them and recap them (just the new chapters, or the whole project). In Settings and Project settings. |
+| **When a video is done** | Automation | Once a project's video is made: copy it (with its subtitles, thumbnail and Shorts) to a folder, run a command of yours, and tell your phone through [ntfy](https://ntfy.sh) or a Discord or Slack webhook. It can also tell you when a recap stops to ask you something or fails. In Settings. |
+| **Post to YouTube** | Publishing | Posts a project's video to your channel (title, chapters, thumbnail, and if you like its subtitles and a playlist) and its Shorts, all at once or one a day: when the video is made, or from the Video tab. Adds a Posting step to New project. Needs your own Google OAuth client: see the wiki's [walkthrough](https://github.com/iEatNoodlez/RecapStudio-Plugins/wiki/Connecting-your-YouTube-channel). |
+| **Branding** | Video addition | Your channel's logo in a corner of every video, and an intro and an outro (a clip or a picture) before and after each part. Set once in Settings; each project can leave either out. |
+| **Reading Spanish comics** | Language addition (comics) | Comics in Spanish read in Spanish (PaddleOCR's Latin-alphabet reader, downloaded the first time) and translated into English, as Korean, Chinese and Japanese ones are. |
+| **Recaps in Spanish** | Language addition (narration) | A project's recap narrated in Spanish (Latin America or Spain): the script, the voice for each provider, the subtitles, the captions and the suggested title. In New project and Project settings. |
+| **EPUB comics** | File format addition | Chapters imported from a comic's `.epub` (DRM-free), as from a `.cbz`: a volume is split into its chapters by its table of contents, leaving out its contents, copyright, advertisement and divider pages. With Import folder, dropped files and the Watched folder. |
+
+### The types
+
+- **Series lookup**: fills in a new project from what a site knows about the series (its name, kind and characters), so you don't type them. It searches the series details sources below, and any source plugins of your own that can search.
+- **Series details source**: a service with a public API that Series lookup searches. It gives a series' details, and its characters when the service lists them, but never chapters. It works as soon as it's installed, with no restart.
+- **Automation**: does the app's work for you on a timer or when something happens (a time of day, a file dropped in a folder, a video finished), while Recap Studio is open.
+- **Publishing**: sends finished recaps somewhere outside the app, such as your YouTube channel.
+- **Video addition**: adds something of yours to every video the app makes, such as a logo, an intro and an outro.
+- **Language addition**: a language the app didn't have.
+  - **Comics**: comics in that language are read in it, then translated into English for the script writer, as Korean, Chinese and Japanese ones are.
+  - **Narration**: recaps written and voiced in that language, whatever language the comic is in.
+- **File format addition**: a kind of file chapters can be imported from, wherever the app imports them (Import folder, files dropped on a project, the Watched folder).
 
 The docs are in the app's repository: [Plugins](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/plugins.md).
 
 ## What goes on this list
 
 - **Plugins that add features** (`features/<id>/`): only this list can install them, since they run inside the app with all its access.
-- **Sources for services with public APIs** (`sources/<id>.py`): series details and characters, like AniList.
-- **No scrapers**: nothing that gets chapters from scan or aggregator sites. Those stay what members bring themselves (a plugin file, their own list, gallery-dl or Suwayomi). Keeping them off this list keeps a takedown from ever reaching it, or the plugins an edition of the app is built with.
+- **Sources for services with public APIs** (`sources/<id>.py`): series details and characters, like AniList and MangaUpdates.
+- **No scrapers**: nothing that gets chapters from scan or aggregator sites. Those stay what members bring themselves (a plugin file, their own list, gallery-dl or Suwayomi). Keeping them off this list keeps a takedown from ever reaching it, or the plugins an edition of the app is built with. New chapters on a schedule gets nothing by itself: it checks through the sources a member added.
 
 ## Changing a plugin
 
@@ -32,4 +48,4 @@ How plugins are written (what `setup(plugin)` and the page script are given, and
 
 ## License
 
-MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use).
+MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use; MangaUpdates' asks to be credited, which Find the series does by naming each result's source).

@@ -23,7 +23,7 @@
       onchange: (e) => save({ folder: e.target.value }) });
     const tick = (key, text) => el("label", { class: "check" },
       el("input", { type: "checkbox", checked: !!s[key], onchange: (e) => save({ [key]: e.target.checked }) }), ` ${text}`);
-    box.replaceChildren(
+    box.replaceChildren(...[  // (the rows left out are null)
       el("span", { class: "hint" }, "Put a folder named after a project in it, and drop that project's chapters there: " +
         "folders of pictures, .zip or .cbz. They're added once they've finished copying, numbered like Add chapters " +
         "does it. Nothing is moved or deleted, and chapters made of pictures are read from there, so leave them."),
@@ -43,6 +43,6 @@
         el("div", {}, el("span", { class: "muted" }, x.at), " ", el("b", {}, x.project), ": ", x.note)))] : []),
       s.folder ? el("div", { class: "key-row" }, el("button", { type: "button", class: "ghost small", onclick: async () => {
         try { draw(box, await api(`${BASE}/look`, { method: "POST" })); } catch (e) { error.textContent = e.message; }
-      } }, "Look now")) : null);
+      } }, "Look now")) : null].filter(Boolean));
   }
 })();
