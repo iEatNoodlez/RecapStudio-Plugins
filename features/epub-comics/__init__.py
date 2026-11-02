@@ -4,7 +4,8 @@ folder, files dropped on a project, the Watched folder plugin), as from .cbz fil
 A comic's EPUB (a volume, say) is read in its reading order (its spine), each page's picture taken as it is. When its
 table of contents names two chapters or more, it becomes one chapter of the project each, named as the contents name
 them; the cover, title and colour pages before the first chapter go with it, and the contents, copyright and
-advertisement pages are left out. Otherwise the whole book is one chapter, named after the file.
+advertisement pages are left out. Otherwise the whole book is one chapter, named after the file. A picture the book
+shows again and again (a divider page between episodes) is left out too.
 
 Left out, saying why: an EPUB locked with DRM (its pages encrypted, to open only in its store's app), and a novel (pages
 of text, not pictures). Only the EPUB's own files are read, never anything it links to.
@@ -13,6 +14,7 @@ import html
 import posixpath
 import re
 import zipfile
+from collections import Counter
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -22,6 +24,7 @@ MAX_DOC = 4 << 20          # a page's XHTML (or the contents), at most
 MAX_PICTURE = 100 << 20    # a page's picture
 TEXT_PAGE = 300            # characters on a page without pictures that make it a page of text
 SHORTEST = 4               # chapters shorter than this on average: the contents list pages, not chapters
+REPEATED = 3               # the same picture this many times in a book: a divider page, not the story
 
 # contents entries that aren't the story (what they start with): their pages are left out
 LEAVE_OUT = re.compile(r"(table of contents|contents|toc|copyright|colophon|newsletter|sign up|also available|also by|"
@@ -36,7 +39,7 @@ PICTURE_TAG = re.compile(TAG.format("(?:img|image)"), re.I)
 LINK = re.compile(r"<(?:[\w-]+:)?a\b[^>]*?\bhref\s*=\s*([\"'])(.*?)\1[^>]*>(.*?)</(?:[\w-]+:)?a\s*>", re.S | re.I)
 TOC_NAV = re.compile(r"<(?:[\w-]+:)?nav\b[^>]*?\btype\s*=\s*([\"'])[^\"']*\btoc\b[^\"']*\1[^>]*>(.*?)</(?:[\w-]+:)?nav\s*>",
                      re.S | re.I)
-NCX_POINT = re.compile(r"<(?:[\w-]+:)?text\b[^>]*>(.*?)</(?:[\w-]+:)?text\s*>\s*</(?:[\w-]+:)?navLabel\s*>\s*"
+NCX_POINT = re.compile(r"<(?:[\w-]+:)?text\b[^>]*>([^<]*)</(?:[\w-]+:)?text\s*>\s*</(?:[\w-]+:)?navLabel\s*>\s*"
                        r"<(?:[\w-]+:)?content\b[^>]*?\bsrc\s*=\s*([\"'])(.*?)\2", re.S | re.I)
 
 
@@ -190,20 +193,24 @@ def chapters(path: Path) -> list[dict]:
                                  "only DRM-free EPUBs can be imported")
             spine, nav, ncx = _book(z)
             have = set(z.namelist())
-            pages, starts, pictured, texts = [], {}, 0, 0
+            docs, pictured, texts = [], 0, 0
             for item in spine:
                 pictures, text = _page(z, item)
-                starts.setdefault(item["path"], len(pages))
                 pictures = [p for p in pictures if p in have and posixpath.splitext(p)[1].lower() in PICTURES]
-                if pictures:
-                    pictured += 1
-                for p in pictures:
-                    if not pages or pages[-1] != p:  # (one picture shown twice in a row: once)
-                        pages.append(p)
-                if not pictures and text >= TEXT_PAGE:
-                    texts += 1
+                docs.append((item["path"], pictures))
+                pictured += bool(pictures)
+                texts += not pictures and text >= TEXT_PAGE
             if texts > pictured:
                 raise ValueError("it's a book of text (a novel, say), not a comic's pages")
+            same = lambda p: (z.getinfo(p).CRC, z.getinfo(p).file_size)  # (the same picture, under any name)
+            shown = [p for _, pictures in docs for p in pictures]
+            times = Counter(same(p) for i, p in enumerate(shown) if not i or shown[i - 1] != p)
+            pages, starts = [], {}
+            for doc, pictures in docs:
+                starts.setdefault(doc, len(pages))
+                for p in pictures:
+                    if times[same(p)] < REPEATED and (not pages or pages[-1] != p):  # (one shown twice in a row: once)
+                        pages.append(p)
             marks = [(starts[doc], title) for doc, title in _contents(z, nav, ncx) if doc in starts]
     except zipfile.BadZipFile:
         raise ValueError("it isn't an EPUB (it isn't a zip file)")

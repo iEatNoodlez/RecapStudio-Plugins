@@ -2,12 +2,17 @@
 - an EPUB 3 volume split into its chapters by its contents (a volume's entry over its first chapter, the cover with
   chapter 1, the contents and copyright pages left out), its pages found however they're written (<img>, SVG's
   <image>, a %20 in a name, an HTML entity), links out of the EPUB and missing pictures passed over;
-- an EPUB 2 volume (its contents in toc.ncx), with a preview of the next volume left out;
+- an EPUB 2 volume (its contents in toc.ncx, after the book's title), with its divider pages (one picture under three
+  names) and a preview of the next volume left out;
 - one without chapters in its contents, and one whose contents list every page: one chapter, named after the file;
 - left out, saying why: DRM, a novel, a file that isn't a zip, a zip that isn't an EPUB (scrambled fonts are fine);
-- through the app: Import folder, dropped files, and the Watched folder (a part renamed isn't added again)."""
+- through the app: Import folder, dropped files, and the Watched folder (a part renamed isn't added again);
+- with RECAP_TEST_EPUB=<a real EPUB of yours>, that one too, through Import folder (into this test's own folder)."""
 import io
+import os
 import zipfile
+from collections import Counter
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -70,7 +75,8 @@ def make_epub(docs, pictures, toc=(), ncx=False, encrypted=(), container=True) -
         if ncx:
             items.append('<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>')
             z.writestr("OEBPS/toc.ncx", '<?xml version="1.0"?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" '
-                       f'version="2005-1"><navMap>{points(toc)}</navMap></ncx>')
+                       f'version="2005-1"><docTitle><text>Test volume</text></docTitle><docAuthor><text>Someone</text></docAuthor>'
+                       f'<navMap>{points(toc)}</navMap></ncx>')
         else:
             items.append('<item id="nav" href="Text/nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>')
             first = docs[0][0] if docs else "x"
@@ -104,10 +110,14 @@ VOL1 = make_epub(docs, pics, toc=[("Cover", "cover", []), ("Contents", "contents
                                   ("Copyright", "copyright", [])])
 
 pics2, docs2 = {}, []
-for ch in (3, 4):
+DIVIDER = picture(950)
+for ch, dividers in ((3, ["div1", "div2"]), (4, ["div3"])):
     for i in range(1, 5):
         pics2[f"c{ch}_{i}.jpg"] = picture(ch * 100 + 100 + i)  # 401 to 404, 501 to 504
         docs2.append((f"c{ch}_{i}", page(f"../Images/c{ch}_{i}.jpg", svg=True)))
+    for d in dividers:  # (the same picture each time, under its own name)
+        pics2[f"{d}.jpg"] = DIVIDER
+        docs2.append((d, page(f"../Images/{d}.jpg")))
 for i in (1, 2):
     pics2[f"preview{i}.jpg"] = picture(900 + i)
     docs2.append((f"preview{i}", page(f"../Images/preview{i}.jpg")))
@@ -148,7 +158,7 @@ check("links out of the EPUB and missing pictures passed over", parts[1]["pages"
 got = list(ec.pages(series / "Vol 01.epub", parts[0]["pages"]))
 check("its pictures read, as they are", [n for n, _ in got] == parts[0]["pages"] and got[3][1] == pics["page 003.jpg"])
 parts = ec.chapters(series / "Vol 02.epub")
-check("EPUB 2 (toc.ncx): its chapters; the preview of the next volume left out",
+check("EPUB 2 (toc.ncx): its chapters (not the book's title with the first); its dividers and the preview left out",
       [(x["name"], len(x["pages"])) for x in parts] == [("Chapter 3", 4), ("Chapter 4", 4)], parts)
 check("no chapters in its contents: one chapter", [(x["name"], len(x["pages"])) for x in ec.chapters(series / "Oneshot.epub")]
       == [(None, 5)])
@@ -207,4 +217,18 @@ store.update(w, lambda p: p["chapters"][0].update(name="Chapter 1: Renamed"))
 wf.look()
 check("not again, even with one renamed (each part is a source of its own)", len(store.load(w)["chapters"]) == 2,
       [c["name"] for c in store.load(w)["chapters"]])
+
+if os.environ.get("RECAP_TEST_EPUB"):  # (a real EPUB: read where it is, imported into this test's own data folder)
+    book = Path(os.environ["RECAP_TEST_EPUB"])
+    real = app.project("A real EPUB")
+    r = app.post(f"/api/projects/{real}/scan-folder", json={"path": str(book.parent)}).json()
+    mine = [c for c in r["chapters"] if c["key"].split("#")[0] == book.stem]
+    for c in mine:
+        print(f"   {c['name']}: {c['pages']} pages")
+    check("a real EPUB: its chapters found", mine and not any(x["file"] == book.name for x in r["skipped"]), r["skipped"])
+    r = app.post(f"/api/projects/{real}/import-folder", json={"path": str(book.parent), "keys": [c["key"] for c in mine]}).json()
+    check("and imported, every page", r["chapters"] == len(mine) and r["pages"] == sum(c["pages"] for c in mine), r)
+    p = store.load(real)
+    times = Counter(store.page_path(p, x).read_bytes() for x in p["pages"])
+    check("no picture three times or more (dividers left out)", max(times.values()) < 3, max(times.values()))
 done()

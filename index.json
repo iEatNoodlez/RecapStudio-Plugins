@@ -5,11 +5,11 @@
    "id": "epub-comics",
    "kind": "feature",
    "name": "EPUB comics",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/epub-comics-1.0.0.zip",
-   "sha256": "fc6d9477b4cd2f00be447976e12c531a1e355d858dce67388b3481cd75e75062",
-   "summary": "Chapters imported from a comic's .epub (DRM-free), as from a .cbz: a volume is split into its chapters by its table of contents, leaving out its contents, copyright and advertisement pages."
+   "file": "dist/epub-comics-1.0.1.zip",
+   "sha256": "391e1dbf3a3160ae9924c9e77e1dee5a9c699bf102c28b687448c275c0b32d8e",
+   "summary": "Chapters imported from a comic's .epub (DRM-free), as from a .cbz: a volume is split into its chapters by its table of contents, leaving out its contents, copyright, advertisement and divider pages."
   },
   {
    "id": "find-series",

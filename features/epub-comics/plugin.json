@@ -1,7 +1,7 @@
 {
   "id": "epub-comics",
   "name": "EPUB comics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
-  "summary": "Chapters imported from a comic's .epub (DRM-free), as from a .cbz: a volume is split into its chapters by its table of contents, leaving out its contents, copyright and advertisement pages."
+  "summary": "Chapters imported from a comic's .epub (DRM-free), as from a .cbz: a volume is split into its chapters by its table of contents, leaving out its contents, copyright, advertisement and divider pages."
 }
