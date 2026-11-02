@@ -2,6 +2,16 @@
  "name": "Recap Studio's plugins",
  "plugins": [
   {
+   "id": "epub-comics",
+   "kind": "feature",
+   "name": "EPUB comics",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/epub-comics-1.0.0.zip",
+   "sha256": "fc6d9477b4cd2f00be447976e12c531a1e355d858dce67388b3481cd75e75062",
+   "summary": "Chapters imported from a comic's .epub (DRM-free), as from a .cbz: a volume is split into its chapters by its table of contents, leaving out its contents, copyright and advertisement pages."
+  },
+  {
    "id": "find-series",
    "kind": "feature",
    "name": "Find the series",
@@ -45,10 +55,10 @@
    "id": "watched-folder",
    "kind": "feature",
    "name": "Watched folder",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/watched-folder-1.0.0.zip",
-   "sha256": "414eeb7e17d57dbb26d03836f098935ad973a9937b13149e770e04e8f5c9de67",
+   "file": "dist/watched-folder-1.0.1.zip",
+   "sha256": "fe42179666a322fa745704a0a5e782d8aadebc7727d14fe07b56c28f2378f600",
    "summary": "Drop chapters (folders of pictures, .zip or .cbz) into a folder named after their project, and they're added to it and, if you like, recapped."
   },
   {

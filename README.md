@@ -10,6 +10,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 | **Post to YouTube** | Adds to the app | Posts a project's video to your channel (title, chapters, thumbnail, and if you like its subtitles and a playlist) and its Shorts, all at once or one a day: when the video is made, or from the Video tab. Adds a Posting step to New project. Needs your own Google OAuth client: see the wiki's [walkthrough](https://github.com/iEatNoodlez/RecapStudio-Plugins/wiki/Connecting-your-YouTube-channel). |
 | **Recaps in Spanish** | Adds to the app | A project's recap narrated in Spanish (Latin America or Spain): the script, the voice for each provider, the subtitles, the captions and the suggested title. In New project and Project settings. |
 | **Reading Spanish comics** | Adds to the app | Comics in Spanish read in Spanish (PaddleOCR's Latin-alphabet reader, downloaded the first time) and translated into English, as Korean, Chinese and Japanese ones are. |
+| **EPUB comics** | Adds to the app | Chapters imported from a comic's `.epub` (DRM-free), as from a `.cbz`: a volume is split into its chapters by its table of contents, leaving out its contents, copyright and advertisement pages. With Import folder, dropped files and the Watched folder. |
 | **AniList** | Source (series details, no chapters) | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
 
 The docs are in the app's repository: [Plugins](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/plugins.md).

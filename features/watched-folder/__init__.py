@@ -3,7 +3,7 @@ chosen, recapped.
 
 The watched folder holds a folder per project, named after it (or after the project's own folder):
   <watched folder>\\<project name>\\Chapter 12\\       pictures
-  <watched folder>\\<project name>\\Chapter 13.cbz     or .zip
+  <watched folder>\\<project name>\\Chapter 13.cbz     or .zip, or a file a plugin reads (an .epub: a chapter each part)
 Every WATCH seconds each of those is scanned as Add chapters scans a folder (importer.scan), for chapters the project
 doesn't have yet (the same check: by where a chapter came from, or by its name). A chapter is added once it has
 stayed the same for SETTLE seconds, so one still being copied waits. Nothing is moved or deleted: chapters made of
@@ -48,6 +48,11 @@ def _signature(c: dict) -> list:
     return [len(stats), sum(s.st_size for s in stats), max((s.st_mtime for s in stats), default=0)]
 
 
+def _id(c: dict) -> str:
+    """A chapter found in the folder: its folder or file, or its part of a file (an EPUB volume's chapter)."""
+    return c.get("source", c["path"])
+
+
 def _project_for(folder_name: str, projects: list[dict]) -> str | None:
     key = folder_name.strip().lower()
     for p in projects:
@@ -86,12 +91,12 @@ def look() -> dict:
                 if pid:
                     p = store.load(pid)
                     have = {c.get("source") for c in p["chapters"]} | {c["name"] for c in p["chapters"]}
-                    found = [c for c in found if c["path"] not in have and c["name"] not in have]
+                    found = [c for c in found if _id(c) not in have and c["name"] not in have]
                 ready = []
                 for c in found:
-                    sig, before = _signature(c), st["seen"].get(c["path"])
+                    sig, before = _signature(c), st["seen"].get(_id(c))
                     since = before[1] if before and before[0] == sig else now
-                    seen[c["path"]] = [sig, since]
+                    seen[_id(c)] = [sig, since]
                     if now - since >= SETTLE:
                         ready.append(c)
                 if not ready:
@@ -103,7 +108,7 @@ def look() -> dict:
                     made = "a new project, "
                 result = store.update(pid, lambda p: importer.import_into(p, str(sub), [c["key"] for c in ready], "number"))
                 for c in ready:
-                    seen.pop(c["path"], None)
+                    seen.pop(_id(c), None)
                 twice = result.get("duplicates") or []
                 st["log"].insert(0, {"at": now, "project": store.load(pid)["name"],
                                      "note": f"{made}added {', '.join(c['name'] for c in ready)} "
