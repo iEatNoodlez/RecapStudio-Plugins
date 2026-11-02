@@ -12,6 +12,36 @@
    "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources."
   },
   {
+   "id": "overnight-queue",
+   "kind": "feature",
+   "name": "Overnight queue",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/overnight-queue-1.0.0.zip",
+   "sha256": "2ed05df7da7f6298c59c59e1856531cf5fc239f2c4423481537ad76b90e19f37",
+   "summary": "Line up several projects and Make the recap runs them one after another, from a time you choose until a time you choose. A project that stops to ask you something is left for the morning."
+  },
+  {
+   "id": "watched-folder",
+   "kind": "feature",
+   "name": "Watched folder",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/watched-folder-1.0.0.zip",
+   "sha256": "414eeb7e17d57dbb26d03836f098935ad973a9937b13149e770e04e8f5c9de67",
+   "summary": "Drop chapters (folders of pictures, .zip or .cbz) into a folder named after their project, and they're added to it and, if you like, recapped."
+  },
+  {
+   "id": "youtube-post",
+   "kind": "feature",
+   "name": "Post to YouTube",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/youtube-post-1.0.0.zip",
+   "sha256": "3f050e825698a63075fc2e22b8919ea7b0289d12309b14759d4ceb8f6d13d9c9",
+   "summary": "Posts a project's video to your YouTube channel, with its title, chapters and thumbnail, and its Shorts all at once or one a day: when the video is made, or when you say. Adds a step to New project."
+  },
+  {
    "id": "anilist",
    "kind": "source",
    "name": "AniList",

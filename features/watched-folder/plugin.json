@@ -1,0 +1,7 @@
+{
+  "id": "watched-folder",
+  "name": "Watched folder",
+  "version": "1.0.0",
+  "api": 1,
+  "summary": "Drop chapters (folders of pictures, .zip or .cbz) into a folder named after their project, and they're added to it and, if you like, recapped."
+}

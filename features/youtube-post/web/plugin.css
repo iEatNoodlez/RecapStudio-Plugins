@@ -1,0 +1,18 @@
+/* Post to YouTube: Settings → YouTube, the New project step and the Video tab's dialog (plugin.js) */
+.yt-steps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+label.yt-time { display: flex; flex-direction: row; align-items: center; gap: 8px; max-width: none; }
+.yt-time input { width: auto; }
+.yt-items { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; max-height: 30vh; overflow: auto; }
+.yt-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.yt-item:first-child { border-top: none; }
+.yt-item .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+.yt-state { font-size: 12px; text-align: right; }
+.yt-posted .yt-state, .yt-posted .yt-state a { color: var(--ok); }
+.yt-changed .yt-state, .yt-due .yt-state { color: var(--warn); }
+.yt-dialog .setup-page label.wide-label { max-width: none; }
+.yt-dialog textarea { width: 100%; }
+.yt-steps { font-size: 12px; color: var(--muted); }
+.yt-guide { display: block; font-size: 13px; color: var(--accent); margin: 2px 0 4px; }
+.yt-extras { display: flex; flex-direction: column; gap: 6px; }
+.yt-extras select { width: auto; max-width: 100%; }
+.yt-item .tag + .tag, .yt-item span > .tag:not(:first-child) { margin-left: 6px; }

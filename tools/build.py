@@ -66,7 +66,8 @@ def main():
     plugins = [feature_entry(d) for d in sorted((ROOT / "features").iterdir()) if (d / "plugin.json").is_file()]
     plugins += [source_entry(f) for f in sorted((ROOT / "sources").glob("*.py")) if not f.name.startswith("_")]
     index = {"name": NAME, "plugins": plugins}
-    (ROOT / "index.json").write_text(json.dumps(index, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    with open(ROOT / "index.json", "w", encoding="utf-8", newline="\n") as f:  # (LF on Windows too)
+        f.write(json.dumps(index, indent=1, ensure_ascii=False) + "\n")
     for p in plugins:
         print(f"{p['kind']:8} {p['id']:20} {p['version']:8} {p['sha256'][:12]}  {p['file']}")
 

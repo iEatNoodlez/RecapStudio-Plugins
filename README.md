@@ -5,6 +5,9 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 | Plugin | Kind | What it does |
 |---|---|---|
 | **Find the series** | Adds to the app | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
+| **Overnight queue** | Adds to the app | Several projects' Make the recap, one after another, from a start time to a stop time. A project that stops to ask you something is left for the morning. In the sidebar. |
+| **Watched folder** | Adds to the app | Chapters dropped into a folder named after their project are added to it and, if you like, recapped. In Settings. |
+| **Post to YouTube** | Adds to the app | Posts a project's video to your channel (title, chapters, thumbnail, and if you like its subtitles and a playlist) and its Shorts, all at once or one a day: when the video is made, or from the Video tab. Adds a Posting step to New project. Needs your own Google OAuth client: see the wiki's [walkthrough](https://github.com/iEatNoodlez/RecapStudio-Plugins/wiki/Connecting-your-YouTube-channel). |
 | **AniList** | Source (series details, no chapters) | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
 
 The docs are in the app's repository: [Plugins](https://github.com/iEatNoodlez/RecapStudio/blob/main/docs/plugins.md).
