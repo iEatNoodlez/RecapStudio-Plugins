@@ -7,7 +7,14 @@ the Korean, Chinese and Japanese reader uses, and the recognizer for Latin-alpha
 with its accents, ñ and ¿ (its alphabet has no ¡). They're downloaded the first time a Spanish project's text is
 read (about 13 MB, into data\\addons\\reading-spanish, pinned and checked against their checksums), never part of the
 app or of the plugin.
+
+Tried on a Spanish scanlation's webtoon (Temple Scan's), two things it got wrong each time are put right:
+- RapidOCR's angle check turned words it took to be upside down: "NO" came out "ON" (both letters read the same
+  upside down), "ESTAMOS" as "SOROSS". A comic's lettering isn't upside down, so it's off.
+- Lettering in capitals: ¡ was read as a small "i" ("iSI NO QUIERES"), and a capital now and then as a small letter
+  ("AH, sí."). In capitals, a small "i" starting a word is ¡, and the rest is capitals (fix).
 """
+import re
 import time
 
 from fastapi import HTTPException
@@ -24,6 +31,8 @@ MODELS = addon.Download(store.ADDONS_DIR / "reading-spanish", {
     "rec.yml": (REPO, REV, "inference.yml", 6_817, "0bbe984570f597af3638e50bdf2e8276f3ab26a61966096538b3b0d1849f5c84"),
 })
 NAMES = "as the comic writes them, with their accents (José Muñoz)"
+CAPITALS = 0.75   # lettering in capitals: this share of its letters capitals, or more (of 4 letters or more)
+OPENING = re.compile(r"(?:^|(?<=[\s¿\"'«(—-]))i(?=[^\W\d_])")  # a small "i" starting a word: ¡, in capitals
 
 
 def _keys():
@@ -41,7 +50,15 @@ def reader() -> dict:
     if not MODELS.installed():
         raise RuntimeError("The Spanish text reader isn't downloaded yet")
     return {"det_model_path": str(MODELS.path("det.onnx")), "rec_model_path": str(MODELS.path("rec.onnx")),
-            "rec_keys_path": str(_keys())}
+            "rec_keys_path": str(_keys()), "use_cls": False}
+
+
+def fix(text: str) -> str:
+    """A bubble's text as read, put right where it's lettered in capitals (ocr.READERS' "fix")."""
+    letters = [c for c in text if c.isalpha()]
+    if len(letters) < 4 or sum(c.isupper() for c in letters) < CAPITALS * len(letters):
+        return text
+    return OPENING.sub("¡", text).upper()
 
 
 def ready(job) -> None:
@@ -69,7 +86,7 @@ def ready(job) -> None:
 
 
 def setup(plugin):
-    plugin.language("es", "Spanish", names=NAMES, reader=reader, ready=ready)
+    plugin.language("es", "Spanish", names=NAMES, reader=reader, ready=ready, fix=fix)
 
     @plugin.router.get("/status")
     def status():

@@ -6,10 +6,9 @@ import json
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-from helpers import APP, ROOT, App, check, done
+from helpers import APP, ROOT, App, check, done, scratch
 
 index = json.loads((ROOT / "index.json").read_text(encoding="utf-8"))
 entries = {p["id"]: p for p in index["plugins"]}
@@ -17,7 +16,7 @@ features = sorted(d.name for d in (ROOT / "features").iterdir() if (d / "plugin.
 sources = sorted(f.stem for f in (ROOT / "sources").glob("*.py") if not f.name.startswith("_"))
 
 # ---- index.json is up to date: built again in a copy, it comes out the same ----
-copy = Path(tempfile.mkdtemp(prefix="recap-list-"))
+copy = scratch("recap-list-")
 for name in ("features", "sources", "tools"):
     shutil.copytree(ROOT / name, copy / name, ignore=shutil.ignore_patterns("__pycache__"))
 subprocess.run([sys.executable, str(copy / "tools" / "build.py")], check=True, capture_output=True)

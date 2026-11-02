@@ -3,9 +3,10 @@
 Recaps in Spanish: a project set to Spanish gets the Spanish voice for each provider (and only it), its captions timed
 without the English recognizer, the narration's and the title's writers told to write Spanish; none of that is saved
 into the project, and English projects don't change.
-Reading Spanish comics: Spanish is a comic language with its own reader; Read text gets the reader ready first. With
-RECAP_TEST_MODELS=1 it also downloads the reader (about 13 MB, into this test's own data folder, each file checked
-against its pinned checksum) and reads pictures of Spanish text, accents and all."""
+Reading Spanish comics: Spanish is a comic language with its own reader; Read text gets the reader ready first; what
+the reader gets wrong on lettering in capitals (¡ read as "i") is put right. With RECAP_TEST_MODELS=1 it also
+downloads the reader (about 13 MB, into this test's own data folder, each file checked against its pinned checksum)
+and reads pictures of Spanish text, accents and all, with no word turned upside down ("NO" read as "ON")."""
 import json
 import os
 import time
@@ -96,6 +97,13 @@ start = time.time()
 pipeline._reader_ready(job, "es")
 check("Read text gets the reader ready first, saying so", rs_mod.MODELS.installed() and "Spanish text reader" in job["message"])
 rs_mod.MODELS = real
+fixes = {"iSI NO QUIERES TRABAJAR, RENUNCIA!": "¡SI NO QUIERES TRABAJAR, RENUNCIA!",  # (as read from a real webtoon)
+         "icon LO OCUPADOS QUE ESTAMOS": "¡CON LO OCUPADOS QUE ESTAMOS", "AH, sí. ES QUE NO HICE": "AH, SÍ. ES QUE NO HICE",
+         "OYE, iAH!": "OYE, ¡AH!", "Hmm...": "Hmm...", "¿Dónde está el señor Muñoz?": "¿Dónde está el señor Muñoz?"}
+check("lettering in capitals: a small i starting a word is ¡, the rest capitals; other text as read",
+      {t: rs_mod.fix(t) for t in fixes} == fixes, {t: rs_mod.fix(t) for t in fixes})
+check("put right as the text is read (the language's fix)",
+      [b["text"] for b in ocr.put_right([{"text": "iAH, sí. ES QUE NO!"}], "es")] == ["¡AH, SÍ. ES QUE NO!"])
 
 if os.environ.get("RECAP_TEST_MODELS"):  # (downloads the reader, about 13 MB, into this test's own data folder)
     import cv2
@@ -105,11 +113,13 @@ if os.environ.get("RECAP_TEST_MODELS"):  # (downloads the reader, about 13 MB, i
     pipeline._reader_ready(job, "es")
     check("downloaded, each file checked against its pinned checksum", real.installed(), real.status())
 
-    def read(words):
+    def read(words, font="arial.ttf"):
         img = Image.new("RGB", (1100, 160), "white")
-        ImageDraw.Draw(img).text((20, 40), words, fill="black", font=ImageFont.truetype("arial.ttf", 56))
+        ImageDraw.Draw(img).text((20, 40), words, fill="black", font=ImageFont.truetype(font, 56))
         bubbles = ocr.read_bubbles(cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR), "lang:es", " ", False, use_gpu=False)
-        return " ".join(b["text"] for b in bubbles)
+        return " ".join(b["text"] for b in ocr.put_right(bubbles, "es"))
+    text = read("OYE, NO PUEDE SER!", "arialbd.ttf")  # (with RapidOCR's angle check: "OYE, ON PUEDE SER!")
+    check("no word turned upside down: NO isn't read as ON", "NO PUEDE SER" in text, text)
     text = read("¿Dónde está el señor Muñoz?")
     check("reads Spanish, accents and all", "¿Dónde está el señor Muñoz?" in text, text)
     text = read("¿DÓNDE ESTÁ EL SEÑOR MUÑOZ?")

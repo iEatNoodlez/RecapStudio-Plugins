@@ -35,10 +35,10 @@
    "id": "reading-spanish",
    "kind": "feature",
    "name": "Reading Spanish comics",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/reading-spanish-1.0.0.zip",
-   "sha256": "3ae4b9412ed52fd7d19cb21337a5b20b8545998a3b271966be5b3fc5e19e826b",
+   "file": "dist/reading-spanish-1.0.1.zip",
+   "sha256": "f5aba39304f6b798edbbab1ebc872082e7f660a3f1178fd271582517f365c7b0",
    "summary": "Comics in Spanish, read in Spanish and translated into English by your script writer, as Korean, Chinese and Japanese ones are. Downloads PaddleOCR's reader for Latin-alphabet text the first time (about 13 MB)."
   },
   {

@@ -33,6 +33,13 @@ def find_app() -> Path:
 
 APP = find_app()
 fails: list[str] = []
+made: list[Path] = []  # the scratch folders made (scratch)
+
+
+def scratch(prefix: str = "recap-plugin-test-") -> Path:
+    """A new folder in the temp folder, removed by done() when every check passed."""
+    made.append(Path(tempfile.mkdtemp(prefix=prefix)))
+    return made[-1]
 
 
 def check(what: str, ok, extra="") -> bool:
@@ -62,7 +69,7 @@ class App:
     """The app, in this process, on a scratch data folder with some plugins installed."""
 
     def __init__(self, plugins=(), sources=(), settings=None, env=None):
-        self.data = Path(tempfile.mkdtemp(prefix="recap-plugin-test-"))
+        self.data = scratch()
         for pid in plugins:
             shutil.copytree(FEATURES / pid, self.data / "plugins" / pid, ignore=shutil.ignore_patterns("__pycache__"))
         for sid in sources:
@@ -128,4 +135,9 @@ class App:
 
 def done() -> None:
     print("ALL PASS" if not fails else f"{len(fails)} FAILED: {fails}", flush=True)
+    for path in made:  # (kept to look at when something failed)
+        if fails:
+            print(f"(its files: {path})", flush=True)
+        else:
+            shutil.rmtree(path, ignore_errors=True)
     os._exit(1 if fails else 0)  # (the server's threads don't hold it open)
