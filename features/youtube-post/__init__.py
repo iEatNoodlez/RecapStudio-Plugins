@@ -48,6 +48,13 @@ MORE_SCOPE = "https://www.googleapis.com/auth/youtube.force-ssl"  # playlists an
 CHUNK = 8 << 20                # an upload goes up in pieces this big (a multiple of 256 KB)
 TRIES = 6                      # tries for a piece before giving up (2, 4, 8... seconds apart)
 QUOTA = {"quotaExceeded", "uploadLimitExceeded", "rateLimitExceeded", "dailyLimitExceeded"}
+NO_API = "Turn on the YouTube Data API v3 in your Google Cloud project (APIs & Services → Library), then connect again"
+FEWER = "Google wasn't given every permission: connect again and tick them all"
+HINTS = {  # YouTube's reasons that need you to do something, in plain words
+    "youtubeSignupRequired": "That Google account has no YouTube channel. Connect again and pick the account the channel "
+                             "is on (a channel on a Brand Account: pick the Brand Account), or make the channel on youtube.com",
+    "accessNotConfigured": NO_API, "SERVICE_DISABLED": NO_API,
+    "insufficientPermissions": FEWER, "ACCESS_TOKEN_SCOPE_INSUFFICIENT": FEWER}
 TITLE, DESCRIPTION = 100, 5000  # YouTube's limits (characters; the description's is in bytes)
 DEFAULT_CHOICE = {"when": "off", "privacy": "private", "shorts": "none", "daily_at": "18:00", "title": "",
                   "description": "", "publish_at": "", "subtitles": False, "playlist": "", "playlist_shorts": False}
@@ -185,7 +192,11 @@ def start_connect() -> dict:
                                     "account (Security → Third-party access) and connect again")
                 _save_token(found)
                 token = _read("token.json", {})
-                token["channel"] = _channel()
+                try:
+                    token["channel"] = _channel()
+                except (PostError, requests.RequestException):
+                    (_plugin.data_dir / "token.json").unlink(missing_ok=True)  # (no channel: not connected after all)
+                    raise
                 _write("token.json", token)
                 _connect.update(state="done", error="")
                 ok, text = True, f"Connected to {token['channel']['title']}. You can close this tab and go back to Recap Studio."
@@ -339,11 +350,14 @@ def _check_reply(r: requests.Response) -> None:
         err = r.json().get("error") or {}
     except ValueError:
         err = {}
-    reasons = {e.get("reason") for e in err.get("errors") or [] if isinstance(e, dict)}
+    reasons = [e.get("reason") for e in (err.get("errors") or []) + (err.get("details") or []) if isinstance(e, dict)]
     message = err.get("message") or r.reason or str(r.status_code)
-    if reasons & QUOTA:
+    if set(reasons) & QUOTA:
         raise QuotaError(f"YouTube's daily limit is used up ({message})")
-    raise PostError(f"YouTube said: {message}")
+    hint = next((HINTS[x] for x in reasons if x in HINTS), "")
+    if hint:
+        raise PostError(f"YouTube said: {message}. {hint}")
+    raise PostError(f"YouTube said: {message}" + (f" ({reasons[0]})" if reasons and reasons[0] else ""))
 
 
 def _wait(job, seconds: float) -> None:

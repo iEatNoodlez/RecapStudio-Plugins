@@ -184,6 +184,14 @@ class Handler(BaseHTTPRequestHandler):
         if url.path == "/youtube/v3/channels":
             if not self._authorized():
                 return
+            if CONFIG.get("no_channel"):  # (what YouTube says for a Google account with no channel)
+                return self._reply(401, {"error": {"code": 401, "message": "Unauthorized", "errors": [
+                    {"message": "Unauthorized", "domain": "youtube.header", "reason": "youtubeSignupRequired"}]}})
+            if CONFIG.get("api_off"):  # (the YouTube Data API not turned on in the Google project)
+                return self._reply(403, {"error": {"code": 403, "status": "PERMISSION_DENIED", "message":
+                    "YouTube Data API v3 has not been used in project 123 before or it is disabled.",
+                    "errors": [{"reason": "accessNotConfigured"}],
+                    "details": [{"@type": "type.googleapis.com/google.rpc.ErrorInfo", "reason": "SERVICE_DISABLED"}]}})
             return self._reply(200, {"items": [{"id": "UC-test", "snippet": {"title": "Test Channel"}}]})
         if url.path == "/youtube/v3/playlists":
             if not self._authorized():

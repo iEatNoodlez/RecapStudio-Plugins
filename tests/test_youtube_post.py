@@ -196,4 +196,25 @@ check("nothing done twice", len(fake_google.SEEN["captions"]) == 1 and len(fake_
 # ---- disconnecting ----
 a = requests.post(f"{B}/disconnect").json()
 check("disconnected and access taken back", a["channel"] is None and "rt-1" in fake_google.SEEN["revoked"], a)
+
+# ---- a Google account with no YouTube channel (YouTube: 401 Unauthorized, youtubeSignupRequired) ----
+fake_google.CONFIG["no_channel"] = True
+requests.post(f"{B}/connect")
+url = urllib.parse.urlparse(opened[-1])
+q = {k: v[0] for k, v in urllib.parse.parse_qs(url.query).items()}
+fake_google.SEEN.update(challenge=q["code_challenge"], scope=q["scope"])
+page = requests.get(q["redirect_uri"], params={"code": "good-code", "state": q["state"]}).text
+check("no channel: said in plain words", "Unauthorized. That Google account has no YouTube channel" in page
+      and "Brand Account" in page, page[-300:])
+a = requests.get(f"{B}/account").json()
+check("no channel: not connected, and no sign-in kept", a["channel"] is None and a["connect"]["state"] == "error"
+      and not (DATA / "plugin-data" / "youtube-post" / "token.json").exists(), a)
+fake_google.CONFIG.update(no_channel=False, api_off=True)
+requests.post(f"{B}/connect")
+url = urllib.parse.urlparse(opened[-1])
+q = {k: v[0] for k, v in urllib.parse.parse_qs(url.query).items()}
+fake_google.SEEN.update(challenge=q["code_challenge"], scope=q["scope"])
+page = requests.get(q["redirect_uri"], params={"code": "good-code", "state": q["state"]}).text
+check("the API not turned on: said what to turn on", "Turn on the YouTube Data API v3" in page, page[-300:])
+fake_google.CONFIG["api_off"] = False
 done()

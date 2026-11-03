@@ -95,10 +95,10 @@
    "id": "youtube-post",
    "kind": "feature",
    "name": "Post to YouTube",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/youtube-post-1.0.0.zip",
-   "sha256": "3f050e825698a63075fc2e22b8919ea7b0289d12309b14759d4ceb8f6d13d9c9",
+   "file": "dist/youtube-post-1.0.1.zip",
+   "sha256": "74be16f79e81eb862b0202659a8e5986c5c1aeb9ce9b7a7134a387d47a143cda",
    "summary": "Posts a project's video to your YouTube channel, with its title, chapters and thumbnail, and its Shorts all at once or one a day: when the video is made, or when you say. Adds a step to New project."
   },
   {
