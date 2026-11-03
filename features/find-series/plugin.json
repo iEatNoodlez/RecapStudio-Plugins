@@ -1,7 +1,7 @@
 {
   "id": "find-series",
   "name": "Find the series",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
   "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources."
 }

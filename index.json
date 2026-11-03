@@ -25,10 +25,10 @@
    "id": "find-series",
    "kind": "feature",
    "name": "Find the series",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/find-series-1.0.0.zip",
-   "sha256": "16683850518a343a50114a6798a6e4e2f0fa36ecc6b219e832a3d64c91f789c3",
+   "file": "dist/find-series-1.0.1.zip",
+   "sha256": "62a19b2edcb5312ea34abae0bff7cb7f715818ae7e67cf7637995ac2161d5f70",
    "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources."
   },
   {
@@ -70,6 +70,16 @@
    "file": "dist/recaps-in-spanish-1.0.0.zip",
    "sha256": "641bcdd1dbcede207ad0011bf2d4bddf0bdcf4746896af2c01a310c7af4aefb4",
    "summary": "A project's recap narrated in Spanish (Latin America or Spain): the script, the voice, the subtitles, the captions and the suggested YouTube title, whatever language the comic is in."
+  },
+  {
+   "id": "trending",
+   "kind": "feature",
+   "name": "Trending finder",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/trending-1.0.0.zip",
+   "sha256": "30aaada149344639e41627919ab9407d8142487baf2e437915f0dc2f251683f4",
+   "summary": "The series trending now on AniList and looked at most on MangaUpdates, by kind (manga, manhwa, manhua), genre and status, with the ones you have a project of marked. Make a project of one straight from the list."
   },
   {
    "id": "watched-folder",

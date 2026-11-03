@@ -162,15 +162,34 @@
   // The sidebar's box searches: what's typed there is searched for as New project opens.
   R.setNewProjectBox({ placeholder: "Search term", button: "Search",
     title: "Search for the series to make a project of (Find the series)" });
-  R.on("new-project-open", ({ name }) => { nf = finder(name); });
+  R.on("new-project-open", ({ name, series }) => { nf = finder(name); nf.want = series && series.url ? series : null; });
   R.on("new-project-page", (e) => {
     ({ page, state } = e);
     if (page !== "comic" && !(page === "characters" && nf.pick && (nf.cast || nf.castStatus))) return;
     holder = el("div", {});
     e.body.prepend(holder);
     drawNew();
-    if (page === "comic" && nf.query && !nf.ran) runSearch(nf, drawNew);  // the name typed before Create
+    if (page === "comic" && nf.want) pickWanted(nf, drawNew);  // the series another plugin opened New project for
+    else if (page === "comic" && nf.query && !nf.ran) runSearch(nf, drawNew);  // the name typed before Create
   });
+
+  // The series New project was opened for (by the Trending finder): picked from the source for its site, when one of
+  // yours searches it, as if it had been found here; else it's searched for by its name.
+  async function pickWanted(f, draw) {
+    const want = f.want;
+    Object.assign(f, { want: null, ran: true, status: "Getting the series…" });
+    draw();
+    let host = "", source = null;
+    try { host = new URL(want.url).hostname.replace(/^www\./, ""); } catch { /* not a link: searched for instead */ }
+    try {
+      source = host && (await api("/api/sources")).sources.find((s) => s.kind === "plugin" && s.search
+        && s.sites.some((site) => host === site || host.endsWith("." + site)));
+    } catch { /* searched for instead */ }
+    f.status = "";
+    if (!source) return runSearch(f, draw);
+    pick(f, source, { ref: want.url, url: want.url, title: want.title, cover: want.cover, summary: want.summary || "",
+      kind: want.kind || "", year: want.year || null }, draw);
+  }
   R.on("project-created", async ({ project }) => {
     const chosen = nf.pick && nf.cast ? nf.cast.filter((c) => c.on) : [];
     const source = nf.pick ? nf.pick.source.name : "";

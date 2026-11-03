@@ -1,0 +1,7 @@
+{
+  "id": "trending",
+  "name": "Trending finder",
+  "version": "1.0.0",
+  "api": 1,
+  "summary": "The series trending now on AniList and looked at most on MangaUpdates, by kind (manga, manhwa, manhua), genre and status, with the ones you have a project of marked. Make a project of one straight from the list."
+}

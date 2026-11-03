@@ -5,6 +5,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 | Plugin | Type | What it does |
 |---|---|---|
 | **Find the series** | Series lookup | Search for a series instead of typing its name. It names the project, sets its kind, and adds its characters with their pictures. In New project, and the Characters tab → Find the series…. |
+| **Trending finder** | Series discovery | The series trending now on [AniList](https://anilist.co) and looked at most on [MangaUpdates](https://www.mangaupdates.com), by kind (manga, manhwa, manhua), genre and whether it's finished, with the ones you have a project of marked. **Make a project** opens New project for one, with Find the series picking it from the same site. In the sidebar. |
 | **AniList** | Series details source | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
 | **Kitsu** | Series details source | Search, series details and characters from [Kitsu's public API](https://kitsu.docs.apiary.io) (no account or key). Much of its character data came from MyAnimeList, so it stands in for it. Its characters are thorough for older and well-known Japanese manga, and missing for most newer series and webtoons. |
 | **MangaUpdates** | Series details source | Search and series details from [MangaUpdates' public API](https://api.mangaupdates.com) (no account or key). It lists nearly every series that has been scanlated, so it finds many AniList doesn't have. It has no characters. |
@@ -21,6 +22,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 ### The types
 
 - **Series lookup**: fills in a new project from what a site knows about the series (its name, kind and characters), so you don't type them. It searches the series details sources below, and any source plugins of your own that can search.
+- **Series discovery**: finds series worth making a recap of, from what's trending on sites with public APIs, and starts a project of one.
 - **Series details source**: a service with a public API that Series lookup searches. It gives a series' details, and its characters when the service lists them, but never chapters. It works as soon as it's installed, with no restart.
 - **Automation**: does the app's work for you on a timer or when something happens (a time of day, a file dropped in a folder, a video finished), while Recap Studio is open.
 - **Publishing**: sends finished recaps somewhere outside the app, such as your YouTube channel.
@@ -49,4 +51,4 @@ How plugins are written (what `setup(plugin)` and the page script are given, and
 
 ## License
 
-MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use; MangaUpdates' asks to be credited, which Find the series does by naming each result's source; Kitsu's is free, with no key).
+MIT, like the app. The data the sources fetch belongs to those services and is under their terms (AniList's API: free for non-commercial use; MangaUpdates' asks to be credited, which Find the series and the Trending finder do by naming the source; Kitsu's is free, with no key).

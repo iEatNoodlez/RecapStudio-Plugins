@@ -1,0 +1,35 @@
+/* Trending finder: the filters, the list of covers and the series picked (plugin.js) */
+.tr-dialog .setup-head { align-items: baseline; }
+.tr-about { font-size: 12px; text-align: right; max-width: 60%; }
+.tr-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tr-filters select { width: auto; max-width: 100%; }
+.tr-filters label.tr-adult { display: flex; flex-direction: row; align-items: center; gap: 6px; max-width: none; font-size: 13px; }
+.tr-main { display: grid; grid-template-columns: 1fr; gap: 14px; min-height: 0; }
+.tr-main.picked { grid-template-columns: 1fr 320px; }
+.tr-list { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; overflow: auto; height: 60vh; align-content: start; padding: 2px; }
+.tr-card { position: relative; }
+.tr-card.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.tr-card small { font-size: 11px; }
+.tr-title { font-weight: 600; }
+.tr-cover { position: relative; }
+.tr-rank { position: absolute; top: 4px; left: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.72); color: #fff; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tr-have { position: absolute; left: 4px; right: 4px; bottom: 4px; padding: 2px 4px; border-radius: 4px; background: var(--accent); color: #fff; font-size: 11px; text-align: center; }
+.tr-detail { display: flex; flex-direction: column; gap: 8px; height: 60vh; overflow: auto; padding-left: 14px; border-left: 1px solid var(--line); font-size: 13px; }
+.tr-detail-head { display: flex; gap: 10px; align-items: flex-start; }
+.tr-detail-head img, .tr-detail-head .src-nocover { width: 92px; flex: none; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 4px; }
+.tr-detail-head > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tr-detail-head b { font-size: 15px; }
+.tr-others, .tr-detail-head .muted { font-size: 12px; }
+.tr-genres { display: flex; flex-wrap: wrap; gap: 4px; }
+.tr-genres span { padding: 0 8px; border: 1px solid var(--line); border-radius: 10px; font-size: 12px; }
+.tr-summary { margin: 0; white-space: pre-line; line-height: 1.45; }
+.tr-buttons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: auto; padding-top: 6px; }
+.tr-foot { font-size: 12px; }
+@media (max-width: 760px) {
+  .tr-main.picked { grid-template-columns: 1fr; }
+  .tr-grid, .tr-detail { height: auto; max-height: 50vh; }
+  .tr-main.picked .tr-grid { max-height: 24vh; }  /* (the series picked gets the room) */
+  .tr-main.picked .tr-detail { max-height: 38vh; }
+  .tr-detail { padding-left: 0; border-left: none; border-top: 1px solid var(--line); padding-top: 10px; }
+}
