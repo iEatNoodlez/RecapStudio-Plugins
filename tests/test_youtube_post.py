@@ -107,6 +107,13 @@ check("first Short posted when due, through an expired sign-in", until(lambda: l
       and pipeline.latest_for(pid)["status"] == "done", 30) and fake_google.SEEN["refreshes"] >= 1, len(fake_google.SEEN["uploads"]))
 sm = fake_google.SEEN["uploads"][1]["meta"]
 check("the Short's title and description", sm["snippet"]["title"].endswith("(Part 1)") and "#Shorts" in sm["snippet"]["description"], sm)
+check("a title that only fits without its | Manga Recap: that left out, not cut partway",
+      sm["snippet"]["title"] == "I Made 2x My Salary in ONE Night… Then They Left Me Alone With a Dying Patient (Part 1)",
+      sm["snippet"]["title"])
+long = "They Laughed at His BROKEN Maid… Until She Solo'd An Entire SSS-Rank GUILD and Then the Whole Kingdom Bowed"
+check("a long title without one: cut after a whole word", yt._fit(long, " (Part 2)")
+      == "They Laughed at His BROKEN Maid… Until She Solo'd An Entire SSS-Rank GUILD and Then the… (Part 2)",
+      yt._fit(long, " (Part 2)"))
 yt._look()
 time.sleep(1)
 check("the second waits for its day", len(fake_google.SEEN["uploads"]) == 2)

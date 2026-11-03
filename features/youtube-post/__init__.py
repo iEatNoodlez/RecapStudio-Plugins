@@ -252,7 +252,14 @@ def disconnect() -> None:
 def _fit(title: str, suffix: str = "") -> str:
     title = re.sub(r"[<>]", "", title).strip()  # (YouTube refuses < and > in titles)
     room = TITLE - len(suffix)
-    return (title if len(title) <= room else title[: room - 1].rstrip() + "…") + suffix
+    if len(title) > room:
+        bar = title.rfind("|")
+        if 0 < bar <= room and len(title) - bar <= 30:  # the "| Manga Recap" ending is what doesn't fit: left out
+            title = title[:bar].rstrip(" -–—:|")
+        else:  # after a whole word
+            space = title.rfind(" ", 0, room)
+            title = title[:space if space > 0 else room - 1].rstrip(" ,;:-–—|") + "…"
+    return title + suffix
 
 
 def _text(template: str, **fields) -> str:
