@@ -1,6 +1,7 @@
 """The Watched folder, with a stand-in for Make the recap's steps: settling and half-copied files, nothing added twice
 or moved, unknown folders ignored or made into a project, and the projects folder refused."""
 import io
+import time
 import zipfile
 
 import requests
@@ -78,6 +79,26 @@ wf.look()
 check("finished .cbz added next time", [c["name"] for c in store.load(D)["chapters"]][-1] == "Chapter 3")
 wf.look()
 check("nothing added twice", len(store.load(D)["chapters"]) == 3)
+# a chapter added while the project's Make the recap waits behind another project's job: that one job does it too
+until(lambda: all(j["status"] not in pipeline.ACTIVE for j in pipeline.jobs.values()), 10)  # (Chapter 3's is done)
+for name in ("Queue E", "Queue F"):  # (the tests' app has two job workers: both kept busy)
+    BEHAVIOUR[name] = "slow"
+    pipeline.submit(project(name), list(pipeline.STEPS))
+until(lambda: sum(j["status"] == "running" for j in pipeline.jobs.values()) == 2, 5)
+since = time.time()
+pictures(WATCHED / "Queue D" / "Chapter 4", 2)
+wf.look()
+check("its Make the recap waits its turn", (pipeline.latest_for(D) or {}).get("status") == "queued",
+      ([c["name"] for c in store.load(D)["chapters"]], (pipeline.latest_for(D) or {}).get("status"),
+       client.get("/api/plugins/watched-folder/status").json()["log"][:3]))
+pictures(WATCHED / "Queue D" / "Chapter 5", 2)
+wf.look()
+until(lambda: all(j["status"] not in pipeline.ACTIVE for j in pipeline.jobs.values()), 30)
+wf.look()
+until(lambda: all(j["status"] not in pipeline.ACTIVE for j in pipeline.jobs.values()), 10)
+started = [j for j in pipeline.jobs.values() if j["project"] == D and j["created"] >= since]
+check("one Make the recap for chapters added while it waited", len(started) == 1 and len(store.load(D)["chapters"]) == 5,
+      [(j["status"], j["created"] - since) for j in started])
 client.put("/api/plugins/watched-folder/settings", json={"folder": str(WATCHED), "recap": False, "create": True})
 wf.look()
 made = [x for x in store.list_all() if x["name"] == "Nobody's series"]

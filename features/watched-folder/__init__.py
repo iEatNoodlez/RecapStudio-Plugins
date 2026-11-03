@@ -66,6 +66,15 @@ def _busy(pid: str) -> bool:
     return bool(job and job["status"] in pipeline.ACTIVE)
 
 
+def _will_do(pid: str) -> bool:
+    """The project's Make the recap is waiting its turn (another project's job is running): it does the chapters
+    added meanwhile too, since its steps look at the project when they start. Starting another after it would only
+    join the video again (and tell When a video is done twice)."""
+    job = _plugin.job(pid)
+    return bool(job and job["status"] == "queued" and not job.get("chapters") and not job.get("only")
+                and set(pipeline.STEPS) <= set(job["steps"]))
+
+
 def look() -> dict:
     """One look at the watched folder: add what's settled, start Make the recap where chosen."""
     with _lock:
@@ -114,7 +123,7 @@ def look() -> dict:
                                      "note": f"{made}added {', '.join(c['name'] for c in ready)} "
                                              f"({result.get('pages', 0)} pages)"
                                              + (f"; {len(twice)} look imported twice" if twice else "")})
-                if s["recap"] and pid not in st["pending"]:
+                if s["recap"] and pid not in st["pending"] and not _will_do(pid):
                     st["pending"].append(pid)
             st["seen"] = seen  # (what's gone from the folder is forgotten)
         for pid in list(st["pending"]):  # Make the recap, once the project has no job running

@@ -75,8 +75,10 @@ with oq._lock:  # (as the plugin does: its timer could be saving the queue right
 check("stopped at the stop time", until(lambda: state()["state"] == "stopped", 10), state()["state"])
 check("running project paused, next not started", until(lambda: pipeline.latest_for(A)["status"] == "paused", 5)
       and statuses() == [("Queue A", "paused"), ("Queue D", "waiting")], statuses())
-pipeline.latest_for(A)["cancel"] = True
-until(lambda: pipeline.latest_for(A)["status"] == "cancelled", 10)
+pipeline.latest_for(A)["pause"] = False  # Resumed in the morning
+check("a paused project resumed shows as done when it finishes, and still nothing else starts",
+      until(lambda: statuses() == [("Queue A", "done"), ("Queue D", "waiting")], 20)
+      and state()["state"] == "stopped", (state()["state"], statuses()))
 
 # ---- 4. a start time in the future waits; stop before it ----
 client.post("/api/plugins/overnight-queue/clear")

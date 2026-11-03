@@ -1,7 +1,7 @@
 {
   "id": "overnight-queue",
   "name": "Overnight queue",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
   "summary": "Line up several projects and Make the recap runs them one after another, from a time you choose until a time you choose. A project that stops to ask you something is left for the morning."
 }

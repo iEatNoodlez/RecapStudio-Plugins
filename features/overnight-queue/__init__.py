@@ -70,6 +70,17 @@ def tick() -> None:
     start the next."""
     with _lock:
         q = _load()
+        if q["state"] == "stopped":
+            # the project paused at the stop time (or left running) can still finish: resumed in the morning, or
+            # too far along to pause (a render's last chapter goes on to the join), so it doesn't stay "paused"
+            ended = [(it, pipeline.jobs.get(it.get("job") or "")) for it in q["items"]
+                     if it["status"] in ("paused", "left running")]
+            ended = [(it, job) for it, job in ended if job and job["status"] in FINISHED]
+            for it, job in ended:
+                _finish(it, job)
+            if ended:
+                _save(q)
+            return
         if q["state"] not in ("waiting", "running"):
             return
         now = time.time()

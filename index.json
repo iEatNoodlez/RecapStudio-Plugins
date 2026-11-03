@@ -45,10 +45,10 @@
    "id": "overnight-queue",
    "kind": "feature",
    "name": "Overnight queue",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/overnight-queue-1.0.0.zip",
-   "sha256": "2ed05df7da7f6298c59c59e1856531cf5fc239f2c4423481537ad76b90e19f37",
+   "file": "dist/overnight-queue-1.0.1.zip",
+   "sha256": "f3979621dd3e3ef3e911b8963cdf3869dab7f16278f955f72704a7e53259beb1",
    "summary": "Line up several projects and Make the recap runs them one after another, from a time you choose until a time you choose. A project that stops to ask you something is left for the morning."
   },
   {
@@ -75,10 +75,10 @@
    "id": "watched-folder",
    "kind": "feature",
    "name": "Watched folder",
-   "version": "1.0.2",
+   "version": "1.0.3",
    "api": 1,
-   "file": "dist/watched-folder-1.0.2.zip",
-   "sha256": "c11cd733cafd532cf38e3ffefb50389b03649755ddb9f1b1c721061714babf4f",
+   "file": "dist/watched-folder-1.0.3.zip",
+   "sha256": "bf9e863bbd9e612f5e980bce6fedb5156c441e241bb9d82acabca910343d6b32",
    "summary": "Drop chapters (folders of pictures, .zip or .cbz) into a folder named after their project, and they're added to it and, if you like, recapped."
   },
   {
