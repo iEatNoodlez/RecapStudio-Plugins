@@ -79,8 +79,10 @@ try:
     print("-- the window: closed first, left open, passed")
     os.environ["FAKE_WINDOW"] = "close"
     r = app.post("/api/plugins/site-check/open", json={"url": told["url"]})
+    until(lambda: getattr(sys.modules.get("recap_sitecheck_window"), "opened", None), 10)  # (made on a thread)
     window = sys.modules["recap_sitecheck_window"]
-    check("Open the site opens a window on the page that asked", r.ok and window.opened[-1][1] == told["url"]
+    check("Open the site opens a window on the page that asked", r.ok and window.opened
+          and window.opened[-1][1] == told["url"]
           and "127.0.0.1" in window.opened[-1][0], (r.text, window.opened))
     w = wait_window()
     check("closed before passing: said so, and no pass", w["state"] == "closed" and "closed" in w["message"]

@@ -1,15 +1,20 @@
 // Find the series, a Recap Studio feature plugin (a page script only). New project gets a search box that asks every
 // source that can search (AniList from Recap Studio's plugin list, and any source plugin of your own); the series
 // picked names the project and suggests what kind of comic it is, and its characters can be ticked on the dialog's
-// Characters page and added with their pictures. The Characters tab gets the same for a project that already exists.
+// Characters page and added with their pictures. A series picked from a source with chapters (a source plugin of
+// yours for its site) gets them too, once the project is made, unless that's unticked. The Characters tab gets the
+// same characters for a project that already exists.
 (() => {
   const R = window.RecapStudio;
   if (!R || R.version < 1) return;
   const { api, el, plural } = R;
   const TICKED = 15;  // main characters, then supporting ones up to this many, start ticked
+  const GET = "recap-find-series-chapters";  // whether "Get its chapters" was last left ticked, in this window's storage
+  const getChosen = () => { try { return localStorage.getItem(GET) !== "no"; } catch { return true; } };
 
   // one search: what was typed, the results by source, and the series picked with its characters
-  const finder = (query = "") => ({ query, results: null, status: "", ran: false, pick: null, cast: null, castStatus: "" });
+  const finder = (query = "") => ({ query, results: null, status: "", ran: false, pick: null, cast: null, castStatus: "",
+    getChapters: getChosen() });
   const key = (name) => name.trim().toLowerCase();
 
   async function runSearch(f, draw) {
@@ -50,7 +55,7 @@
   }
 
   // the search box and its results, or the series picked (head: its own heading, when nothing above says it)
-  function searchView(f, draw, onPick, { castHint = "", head = true } = {}) {
+  function searchView(f, draw, onPick, { castHint = "", head = true, chapters = false } = {}) {
     const input = el("input", { value: f.query, placeholder: "The series' title", spellcheck: "false",
       oninput: (e) => { f.query = e.target.value; },
       onkeydown: (e) => { if (e.key === "Enter") { e.preventDefault(); runSearch(f, draw); } } });
@@ -64,6 +69,11 @@
           el("span", { class: "muted" }, [`From ${source.name}`, item.year, item.kind].filter(Boolean).join(" · ")),
           item.summary ? el("span", { class: "fs-summary muted" }, item.summary) : null,
           cast ? el("span", { class: "hint" }, cast) : null,
+          chapters && source.chapters !== false ? el("label", { class: "check fs-get" },
+            el("input", { type: "checkbox", checked: f.getChapters, onchange: (e) => {
+              f.getChapters = e.target.checked;
+              try { localStorage.setItem(GET, e.target.checked ? "yes" : "no"); } catch { /* (kept for this time only) */ }
+            } }), `Get its chapters from ${source.name} once the project is made`) : null,
           el("button", { type: "button", class: "ghost small", onclick: () => { f.pick = null; f.cast = null; draw(); } },
             "Pick another"))));
       return box;
@@ -154,7 +164,7 @@
         pick(nf, source, item, drawNew);
         state.setName(item.title);
         if (item.kind) state.setKind(item.kind);
-      }, { castHint: ": tick who to add on the Characters page" })
+      }, { castHint: ": tick who to add on the Characters page", chapters: true })
       : castView(nf, drawNew, new Set(), "The character scan below still runs: it matches the characters it finds in "
         + "the chapters to these, and suggests names for the rest."));
   };
@@ -193,9 +203,28 @@
   R.on("project-created", async ({ project }) => {
     const chosen = nf.pick && nf.cast ? nf.cast.filter((c) => c.on) : [];
     const source = nf.pick ? nf.pick.source.name : "";
+    const chapters = nf.pick && nf.pick.source.chapters !== false && nf.getChapters ? nf.pick : null;
     nf = finder();
     if (chosen.length) await addCharacters(project.id, chosen, source);
+    if (chapters) getAll(project.id, chapters.source, chapters.item);  // (not waited for: the project opens meanwhile)
   });
+
+  // Every chapter of the series picked, got into the new project (a Getting chapters job, placed by their numbers)
+  async function getAll(pid, source, item) {
+    let series;
+    try { series = await api("/api/sources/series", { method: "POST", json: { key: source.key, ref: item.ref } }); }
+    catch (e) {
+      if (!e.check) R.notify(`${e.message}. Chapters → Get chapters from a site can try again.`, "Its chapters weren't got");
+      return;  // (a site that wants its check: Site check offers its window, and Get chapters can try again after)
+    }
+    if (!series.chapters.length) return R.notify(`${source.name} lists no chapters for ${series.title}.`, "No chapters");
+    try {
+      await api(`/api/projects/${pid}/download`, { method: "POST", json: { key: source.key, place: "number", skip: [],
+        series: { ref: series.ref, url: series.url, title: series.title }, chapters: series.chapters } });
+    } catch (e) { return R.notify(e.message, "Its chapters weren't got"); }
+    const open = R.current();
+    if (open && open.id === pid) R.reload();  // (its job shows, with its progress)
+  }
 
   // ---- the Characters tab: the same for a project that already exists ----
 
