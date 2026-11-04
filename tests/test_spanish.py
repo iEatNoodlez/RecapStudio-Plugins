@@ -4,7 +4,8 @@ Recaps in Spanish: a project set to Spanish gets the Spanish voice for each prov
 without the English recognizer, the narration's and the title's writers told to write Spanish; none of that is saved
 into the project, and English projects don't change.
 Reading Spanish comics: Spanish is a comic language with its own reader; Read text gets the reader ready first; what
-the reader gets wrong on lettering in capitals (¡ read as "i") is put right. With RECAP_TEST_MODELS=1 it also
+the reader gets wrong on lettering in capitals (¡ read as "i") is put right; Remove (in its settings) deletes the
+downloaded reader and leaves the plugin installed. With RECAP_TEST_MODELS=1 it also
 downloads the reader (about 13 MB, into this test's own data folder, each file checked against its pinned checksum)
 and reads pictures of Spanish text, accents and all, with no word turned upside down ("NO" read as "ON")."""
 import json
@@ -104,6 +105,25 @@ check("lettering in capitals: a small i starting a word is ¡, the rest capitals
       {t: rs_mod.fix(t) for t in fixes} == fixes, {t: rs_mod.fix(t) for t in fixes})
 check("put right as the text is read (the language's fix)",
       [b["text"] for b in ocr.put_right([{"text": "iAH, sí. ES QUE NO!"}], "es")] == ["¡AH, SÍ. ES QUE NO!"])
+
+# Remove, in its settings: the downloaded reader goes, the plugin stays (DELETE /api/plugins/reading-spanish itself is
+# the app's, which removes the plugin)
+folder = app.data / "plugins" / "reading-spanish"
+state = folder.parent / "features.json"
+before = (sorted(p.name for p in folder.rglob("*")), state.read_bytes() if state.exists() else None, app.plugins.changed)
+if not real.folder.is_relative_to(app.data):
+    raise SystemExit(f"the reader's folder isn't in the test's data folder: {real.folder}")
+real.folder.mkdir(parents=True, exist_ok=True)
+for name in [*real.files, "rec_keys.txt", "installed.json"]:  # (a stand-in reader, as if downloaded)
+    real.path(name).write_text("stand-in", encoding="utf-8")
+check("(a stand-in reader, as if downloaded)", real.installed())
+r = app.delete("/api/plugins/reading-spanish/models")
+check("Remove deletes the downloaded reader", r.status_code == 200 and not r.json()["installed"]
+      and not real.folder.exists(), r.text)
+after = (sorted(p.name for p in folder.rglob("*")), state.read_bytes() if state.exists() else None, app.plugins.changed)
+check("and leaves the plugin installed: its folder and features.json untouched, no restart asked for",
+      before == after and (folder / "plugin.json").exists() and app.loaded("reading-spanish")
+      and app.get("/api/plugins/reading-spanish/status").json()["installed"] is False, (before, after))
 
 if os.environ.get("RECAP_TEST_MODELS"):  # (downloads the reader, about 13 MB, into this test's own data folder)
     import cv2

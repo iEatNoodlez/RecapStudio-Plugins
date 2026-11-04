@@ -115,6 +115,15 @@ bad = [app.get("/api/plugins/trending/list", params=p) for p in (
 check("refused: an unknown site, a list or kind it hasn't, finished on MangaUpdates, a genre not offered",
       [b.status_code for b in bad] == [400] * 5, [(b.status_code, b.text[:60]) for b in bad])
 
+first_settings = app.get("/api/plugins/trending/settings").json()
+saved = app.put("/api/plugins/trending/settings", json={"chapters": "get"})
+refused = app.put("/api/plugins/trending/settings", json={"chapters": "everything"})
+kept = json.loads((app.data / "plugin-data" / "trending" / "settings.json").read_text(encoding="utf-8"))
+check("after Make a project: its chapters looked for by default; 'get' kept in its data folder, an unknown choice refused",
+      first_settings == {"chapters": "show"} and saved.json() == {"chapters": "get"} and refused.status_code == 400
+      and kept == {"chapters": "get"} and app.get("/api/plugins/trending/settings").json() == {"chapters": "get"},
+      (first_settings, saved.text, refused.status_code, kept))
+
 answers["busy"] = True
 r = app.get("/api/plugins/trending/list", params={"site": "anilist", "order": "popular"})
 check("a busy site says so", r.status_code == 503 and "try again in a minute" in r.json().get("detail", ""), r.text)

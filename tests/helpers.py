@@ -68,7 +68,8 @@ def free_port() -> int:
 class App:
     """The app, in this process, on a scratch data folder with some plugins installed."""
 
-    def __init__(self, plugins=(), sources=(), settings=None, env=None):
+    def __init__(self, plugins=(), sources=(), settings=None, env=None, prepare=None):
+        """prepare(data folder): called before the app starts, to put files there (a download it made before)."""
         self.data = scratch()
         for pid in plugins:
             shutil.copytree(FEATURES / pid, self.data / "plugins" / pid, ignore=shutil.ignore_patterns("__pycache__"))
@@ -78,6 +79,8 @@ class App:
         (self.data / "settings.json").write_text(json.dumps({
             "setup_done": True, "check_updates": False, "projects_dir": str(self.data / "Projects"), **(settings or {})}),
             encoding="utf-8")
+        if prepare:
+            prepare(self.data)
         os.environ.update(RECAP_DATA=str(self.data), **(env or {}))
         sys.path.insert(0, str(APP))
         import uvicorn

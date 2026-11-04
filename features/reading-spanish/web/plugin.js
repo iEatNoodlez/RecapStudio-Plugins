@@ -25,7 +25,7 @@
         : st.state === "error" ? `The download failed: ${st.error}`
         : `Spanish text reader: not downloaded yet (${st.download_mb} MB, PaddleOCR's PP-OCRv5, Apache 2.0). Read text downloads it the first time.`),
       el("div", { class: "key-row" }, st.installed
-        ? el("button", { type: "button", class: "ghost small danger", onclick: act("DELETE", "") }, "Remove")
+        ? el("button", { type: "button", class: "ghost small danger", onclick: act("DELETE", "/models") }, "Remove")
         : st.state === "installing" ? el("button", { type: "button", class: "ghost small", onclick: act("POST", "/cancel") }, "Cancel")
         : el("button", { type: "button", class: "ghost small", onclick: act("POST", "/download") }, "Download now")));
     draw();

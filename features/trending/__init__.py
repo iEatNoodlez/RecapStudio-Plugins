@@ -9,19 +9,22 @@ Two lists, from public APIs with no account or key:
 Adult series are left out unless asked for. Series MangaUpdates marks Lolicon or Shotacon always are.
 
 The page script (web/plugin.js) shows them in a dialog from the sidebar, marks the ones a project is already of, and
-opens New project for one (Find the series then picks it from the same site, with its characters).
+opens New project for one (Find the series then picks it from the same site, with its characters). Once the project
+is made, it looks for its chapters in the member's own sources (Get chapters from a site, searching them all), or
+gets them straight away when one has a series called that: the setting kept in settings.json, in its data folder.
 
 Answers are kept for a while (AniList's 15 minutes, MangaUpdates' an hour, as its policy asks), and MangaUpdates is
 asked at most once a second.
 """
 import html
+import json
 import re
 import threading
 import time
 from datetime import date
 
 import requests
-from fastapi import HTTPException
+from fastapi import Body, HTTPException
 
 from recap import sources
 
@@ -78,6 +81,8 @@ _session.headers.update({"Accept": "application/json", "User-Agent": "RecapStudi
 _lock = threading.Lock()
 _kept: dict = {}                                   # (site, filters…): (time, answer)
 _last = [0.0]                                      # when MangaUpdates was last asked
+CHAPTERS = ("show", "get", "off")  # after Make a project: its chapters looked for and shown, got, or neither
+_plugin = None
 
 
 def _clean(text, most: int) -> str:
@@ -206,7 +211,30 @@ def trending(site: str, order: str, kind: str = "all", genre: str = "", status: 
         return found
 
 
+def _settings() -> dict:
+    try:
+        kept = json.loads((_plugin.data_dir / "settings.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError, AttributeError):
+        kept = {}
+    return {"chapters": kept.get("chapters") if kept.get("chapters") in CHAPTERS else "show"}
+
+
 def setup(plugin):
+    global _plugin
+    _plugin = plugin
+
+    @plugin.router.get("/settings")
+    def settings():
+        return _settings()
+
+    @plugin.router.put("/settings")
+    def save_settings(chapters: str = Body(..., embed=True)):
+        if chapters not in CHAPTERS:
+            raise HTTPException(400, f"{chapters} isn't one of {', '.join(CHAPTERS)}")
+        plugin.data_dir.mkdir(parents=True, exist_ok=True)
+        (plugin.data_dir / "settings.json").write_text(json.dumps({"chapters": chapters}), encoding="utf-8")
+        return _settings()
+
     @plugin.router.get("/options")
     def options():
         return {"sites": [{"id": k, **v} for k, v in SITES.items()], "genres": GENRES}

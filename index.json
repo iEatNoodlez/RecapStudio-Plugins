@@ -55,10 +55,10 @@
    "id": "reading-spanish",
    "kind": "feature",
    "name": "Reading Spanish comics",
-   "version": "1.0.1",
+   "version": "1.0.2",
    "api": 1,
-   "file": "dist/reading-spanish-1.0.1.zip",
-   "sha256": "f5aba39304f6b798edbbab1ebc872082e7f660a3f1178fd271582517f365c7b0",
+   "file": "dist/reading-spanish-1.0.2.zip",
+   "sha256": "c3786792a6787e0e7d49e480d74a76cf287679b75ef8c323600f31f29d5dd95e",
    "summary": "Comics in Spanish, read in Spanish and translated into English by your script writer, as Korean, Chinese and Japanese ones are. Downloads PaddleOCR's reader for Latin-alphabet text the first time (about 13 MB)."
   },
   {
@@ -75,11 +75,11 @@
    "id": "trending",
    "kind": "feature",
    "name": "Trending finder",
-   "version": "1.0.0",
+   "version": "1.1.0",
    "api": 1,
-   "file": "dist/trending-1.0.0.zip",
-   "sha256": "30aaada149344639e41627919ab9407d8142487baf2e437915f0dc2f251683f4",
-   "summary": "The series trending now on AniList and looked at most on MangaUpdates, by kind (manga, manhwa, manhua), genre and status, with the ones you have a project of marked. Make a project of one straight from the list."
+   "file": "dist/trending-1.1.0.zip",
+   "sha256": "af3f8c5bd4c2fb44ffa69a6b858cbae0859c45eee75fcd97413040638eb25f56",
+   "summary": "The series trending now on AniList and looked at most on MangaUpdates, by kind (manga, manhwa, manhua), genre and status, with the ones you have a project of marked. Make a project of one straight from the list, and its chapters are looked for in your own sources."
   },
   {
    "id": "watched-folder",

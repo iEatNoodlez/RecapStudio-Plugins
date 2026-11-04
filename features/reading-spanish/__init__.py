@@ -104,7 +104,7 @@ def setup(plugin):
         MODELS.cancel()
         return MODELS.status()
 
-    @plugin.router.delete("")
+    @plugin.router.delete("/models")  # (not "": DELETE /api/plugins/reading-spanish is the app's, removing the plugin)
     def remove():
         try:
             return MODELS.remove()
