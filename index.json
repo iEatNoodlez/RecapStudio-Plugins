@@ -72,6 +72,16 @@
    "summary": "A project's recap narrated in Spanish (Latin America or Spain): the script, the voice, the subtitles, the captions and the suggested YouTube title, whatever language the comic is in."
   },
   {
+   "id": "site-check",
+   "kind": "feature",
+   "name": "Site check",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/site-check-1.0.0.zip",
+   "sha256": "441458c810e121dabed873fcdf32560bfe530d02f16d8cb120657c436cb47a51",
+   "summary": "When a site answers your sources with Cloudflare's check for a person, pass it yourself in a small window: Recap Studio then gets that site's chapters with your pass until it runs out. Needs Recap Studio 0.2.4."
+  },
+  {
    "id": "trending",
    "kind": "feature",
    "name": "Trending finder",

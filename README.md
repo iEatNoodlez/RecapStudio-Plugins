@@ -9,6 +9,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 | **AniList** | Series details source | Search, series details and characters from [AniList's public API](https://docs.anilist.co) (no account or key). |
 | **Kitsu** | Series details source | Search, series details and characters from [Kitsu's public API](https://kitsu.docs.apiary.io) (no account or key). Much of its character data came from MyAnimeList, so it stands in for it. Its characters are thorough for older and well-known Japanese manga, and missing for most newer series and webtoons. |
 | **MangaUpdates** | Series details source | Search and series details from [MangaUpdates' public API](https://api.mangaupdates.com) (no account or key). It lists nearly every series that has been scanlated, so it finds many AniList doesn't have. It has no characters. |
+| **Site check** | Sources helper | When a site answers your sources with Cloudflare's check for a person ("Just a moment…"), **Open the site** opens it in a small window, where you pass the check yourself: wait while it runs, or tick its box. Your source plugins then reach that site with your pass until it runs out. Nothing in the window is done for you. Needs Recap Studio 0.2.4. In Get chapters and Settings. |
 | **Overnight queue** | Automation | Several projects' Make the recap, one after another, from a start time to a stop time. A project that stops to ask you something is left for the morning. In the sidebar. |
 | **Watched folder** | Automation | Chapters dropped into a folder named after their project are added to it and, if you like, recapped. In Settings. |
 | **New chapters on a schedule** | Automation | Projects made from a site are checked for new chapters on the days and at the time you choose, through the sources you added yourself. Each project chooses: tell me, get them, or get them and recap them (just the new chapters, or the whole project). In Settings and Project settings. |
@@ -24,6 +25,7 @@ The plugin list for [Recap Studio](https://github.com/iEatNoodlez/RecapStudio), 
 - **Series lookup**: fills in a new project from what a site knows about the series (its name, kind and characters), so you don't type them. It searches the series details sources below, and any source plugins of your own that can search.
 - **Series discovery**: finds series worth making a recap of, from what's trending on sites with public APIs, and starts a project of one.
 - **Series details source**: a service with a public API that Series lookup searches. It gives a series' details, and its characters when the service lists them, but never chapters. It works as soon as it's installed, with no restart.
+- **Sources helper**: helps the sources you added yourself reach a site. It gets nothing by itself.
 - **Automation**: does the app's work for you on a timer or when something happens (a time of day, a file dropped in a folder, a video finished), while Recap Studio is open.
 - **Publishing**: sends finished recaps somewhere outside the app, such as your YouTube channel.
 - **Video addition**: adds something of yours to every video the app makes, such as a logo, an intro and an outro.
