@@ -19,3 +19,5 @@
 .fs-char.there { opacity: 0.6; cursor: default; }
 .fs-desc { font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .fs-note { font-size: 13px; }
+.fs-from { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.fs-matches { max-height: 26vh; width: 100%; }

@@ -25,11 +25,11 @@
    "id": "find-series",
    "kind": "feature",
    "name": "Find the series",
-   "version": "1.1.0",
+   "version": "1.2.0",
    "api": 1,
-   "file": "dist/find-series-1.1.0.zip",
-   "sha256": "efc83a59319ca0b9168d11ba507ab212c7a7d615de5ab2da2616d8ad58fb1dab",
-   "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources. A series picked from a source of yours with chapters gets them too."
+   "file": "dist/find-series-1.2.0.zip",
+   "sha256": "ffc61694db0a6588484dc2a715df970ae5843d738edcad8312f83e392017ec11",
+   "summary": "Search for a series instead of typing its name: names the project, suggests its kind and fills in its characters, with their pictures, from AniList or your other sources. A series picked from a source of yours with chapters gets them too, and its characters from AniList."
   },
   {
    "id": "new-chapters",
