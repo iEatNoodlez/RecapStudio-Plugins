@@ -14,6 +14,7 @@ import json
 import os
 import queue
 import re
+import shlex
 import shutil
 import subprocess
 import threading
@@ -146,12 +147,24 @@ def copy_out(p: dict, o: dict, s: dict) -> tuple[Path, list[Path]]:
     return dest, copied
 
 
+def _quote(value) -> str:
+    """A value as one word for the shell, which nothing in it can break out of: in double quotes on Windows (cmd.exe
+    has no way to quote a " inside them, so it's left out), and in shlex's quotes elsewhere, where double quotes
+    would still run a title's $(…) or `…`."""
+    value = str(value)
+    if os.name == "nt":
+        return '"' + value.replace('"', "") + '"'
+    return shlex.quote(value)
+
+
 def command_line(command: str, values: dict) -> str:
     """The command with its {places} filled in, each quoted (a place already in quotes isn't quoted twice)."""
     for k in PLACES:
         v = values.get(k, "")
-        quoted = " ".join(f'"{x}"' for x in v) if isinstance(v, list) else f'"{v}"'
-        command = command.replace(f'"{{{k}}}"', quoted).replace(f"{{{k}}}", quoted)
+        quoted = " ".join(_quote(x) for x in v) if isinstance(v, list) else _quote(v)
+        for wrapped in (f'"{{{k}}}"', f"'{{{k}}}'"):
+            command = command.replace(wrapped, quoted)
+        command = command.replace(f"{{{k}}}", quoted)
     return command
 
 
@@ -245,7 +258,7 @@ def look() -> None:
 
 def _status() -> dict:
     clock = lambda t: datetime.fromtimestamp(t).strftime("%d %b %H:%M")  # noqa: E731
-    return {"settings": settings(), "places": list(PLACES),
+    return {"settings": settings(), "places": list(PLACES), "windows": os.name == "nt",
             "log": [{**x, "at": clock(x["at"])} for x in _read("log.json", [])]}
 
 

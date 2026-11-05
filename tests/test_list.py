@@ -6,6 +6,7 @@ import json
 import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 from helpers import APP, ROOT, App, check, done, scratch
@@ -22,9 +23,23 @@ for name in ("features", "sources", "tools"):
 subprocess.run([sys.executable, str(copy / "tools" / "build.py")], check=True, capture_output=True)
 rebuilt = {p["id"]: p for p in json.loads((copy / "index.json").read_text(encoding="utf-8"))["plugins"]}
 check("every plugin is on the list", sorted(entries) == sorted(features + sources), (sorted(entries), features + sources))
+
+
+def members(zip_path: Path) -> list:
+    """A zip's files as they unpack (names, bytes, dates, modes): what its checksum stands for, whichever zlib
+    compressed it (Linux's Python can have another version than Windows', which packs the same bytes differently)."""
+    with zipfile.ZipFile(zip_path) as z:
+        return [(i.filename, i.date_time, i.external_attr, z.read(i)) for i in z.infolist()]
+
+
 for pid, entry in rebuilt.items():
-    check(f"{pid}: index.json is up to date (run tools/build.py after a change)", entries.get(pid) == entry,
-          (entries.get(pid, {}).get("sha256"), entry["sha256"]))
+    listed = entries.get(pid, {})
+    same = listed == entry
+    if not same and entry["kind"] == "feature" and listed:
+        same = ({**listed, "sha256": ""} == {**entry, "sha256": ""} and (ROOT / listed["file"]).is_file()
+                and members(ROOT / listed["file"]) == members(copy / entry["file"]))
+    check(f"{pid}: index.json is up to date (run tools/build.py after a change)", same,
+          (listed.get("sha256"), entry["sha256"]))
 for pid, entry in entries.items():
     f = ROOT / entry["file"]
     check(f"{pid}: its file matches the checksum", f.is_file() and hashlib.sha256(f.read_bytes()).hexdigest() == entry["sha256"])

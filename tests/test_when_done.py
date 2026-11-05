@@ -3,6 +3,7 @@ for Make the recap's steps: the copy (a folder per project, subtitles, thumbnail
 filled in and quoted, and its variables), telling the phone (a video done, a recap that stops to ask, told once, and
 one that fails), a project left out, the test button, and the command refused from a web page."""
 import json
+import os
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -81,6 +82,12 @@ check("the command ran in the output folder, its places filled in and quoted onc
     str(d / "output" / "recap - Part 1.mp4"), "Moon's Tower", str(d / "output" / "recap - Part 1.mp4"),
     str(d / "output" / "recap - Part 2.mp4"), str(mine / "recap - Part 1.mp4")] and said.get("cwd") == str(d / "output"), said)
 check("... with its variables", said.get("project") == "Moon's Tower")
+if os.name == "nt":
+    check("a title can't break out of its quotes", wd.command_line("echo {title}", {"title": 'a" & calc & "b'})
+          == 'echo "a & calc & b"', wd.command_line("echo {title}", {"title": 'a" & calc & "b'}))
+else:
+    line = wd.command_line("echo {title} '{project}'", {"title": "$(touch pwned) `id`", "project": "Moon's"})
+    check("a title can't run anything", line == "echo '$(touch pwned) `id`' 'Moon'\"'\"'s'", line)
 check("its last line logged", any(x["note"] == "The command ran: sent it" for x in wd._read("log.json", [])))
 check("the phone told by ntfy", until(lambda: any(p == "/" and b.get("topic") == "recap-studio-test" for p, b in heard), 10)
       and any("Moon's Tower: its video is done (46 min in 2 parts)." == b.get("message") for p, b in heard if p == "/"), heard)

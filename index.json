@@ -105,10 +105,10 @@
    "id": "when-done",
    "kind": "feature",
    "name": "When a video is done",
-   "version": "1.0.0",
+   "version": "1.1.0",
    "api": 1,
-   "file": "dist/when-done-1.0.0.zip",
-   "sha256": "737013103864caa19b2745cc490f7d831f1ddd16c22f58faac2028f4985b7c8e",
+   "file": "dist/when-done-1.1.0.zip",
+   "sha256": "3aa32f0212ed010fd2d9e3c07d65017d83e675d7bfc209ea5c85b6aede7b04f9",
    "summary": "When a project's video is made: copies it (and its subtitles, thumbnail and Shorts) to a folder, runs a command of yours, and tells your phone through ntfy or a Discord or Slack webhook. It can also tell you when a recap stops to ask you something or fails."
   },
   {

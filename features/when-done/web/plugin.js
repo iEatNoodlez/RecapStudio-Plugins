@@ -42,7 +42,7 @@
       el("span", { class: "hint" }, "Done each time a project's video is made (Make the recap or Render video), " +
         "while Recap Studio is open. A project can be left out in its Project settings."),
       el("h4", {}, "Copy it to a folder"),
-      el("div", { class: "key-row" }, text("folder", "Off; or a folder, e.g. D:\\Finished recaps"),
+      el("div", { class: "key-row" }, text("folder", `Off; or a folder, e.g. ${st.windows === false ? "/mnt/nas/Finished recaps" : "D:\\Finished recaps"}`),
         el("button", { type: "button", class: "ghost small", onclick: async () => {
           const picked = await R.pickFolder(s.folder);
           if (picked) save({ folder: picked });
@@ -50,7 +50,8 @@
       el("div", { class: "wd-ticks" }, tick("own_folder", "In a folder named after the project"),
         tick("srt", "Its subtitles (.srt)"), tick("thumbnail", "Its thumbnail"), tick("shorts", "Its Shorts")),
       el("h4", {}, "Run a command"),
-      text("command", "Off; or a command, e.g. robocopy {folder} \\\\nas\\recaps *.mp4", { class: "wd-command" }),
+      text("command", st.windows === false ? "Off; or a command, e.g. rsync -a {copy} nas:recaps/"
+        : "Off; or a command, e.g. robocopy {folder} \\\\nas\\recaps *.mp4", { class: "wd-command" }),
       el("span", { class: "hint" }, "Run in the project's output folder. Filled in, each in quotes: " +
         st.places.map((p) => `{${p}}`).join(" ") + " ({copy}: the copied video; {videos}: every part). They're also " +
         "in the variables RECAP_VIDEO, RECAP_PROJECT and so on."),
