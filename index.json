@@ -75,10 +75,10 @@
    "id": "site-check",
    "kind": "feature",
    "name": "Site check",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/site-check-1.0.0.zip",
-   "sha256": "441458c810e121dabed873fcdf32560bfe530d02f16d8cb120657c436cb47a51",
+   "file": "dist/site-check-1.0.1.zip",
+   "sha256": "850ebb6516c95cf42866f3b8cb1a55d741a1898b35632e2301c1d0362d6d6928",
    "summary": "When a site answers your sources with Cloudflare's check for a person, pass it yourself in a small window: Recap Studio then gets that site's chapters with your pass until it runs out. Needs Recap Studio 0.2.4."
   },
   {
@@ -105,20 +105,20 @@
    "id": "when-done",
    "kind": "feature",
    "name": "When a video is done",
-   "version": "1.1.0",
+   "version": "1.1.1",
    "api": 1,
-   "file": "dist/when-done-1.1.0.zip",
-   "sha256": "3aa32f0212ed010fd2d9e3c07d65017d83e675d7bfc209ea5c85b6aede7b04f9",
+   "file": "dist/when-done-1.1.1.zip",
+   "sha256": "71fba8cf41cd7acd7ba21f22103145a3fdbf9cc54157897ae588c8ac1c3fce63",
    "summary": "When a project's video is made: copies it (and its subtitles, thumbnail and Shorts) to a folder, runs a command of yours, and tells your phone through ntfy or a Discord or Slack webhook. It can also tell you when a recap stops to ask you something or fails."
   },
   {
    "id": "youtube-post",
    "kind": "feature",
    "name": "Post to YouTube",
-   "version": "1.0.2",
+   "version": "1.1.0",
    "api": 1,
-   "file": "dist/youtube-post-1.0.2.zip",
-   "sha256": "6e1b9759dc2ce19b2ef3f1c28e5afaf738ecc6016640df7092c4634abedfdf5e",
+   "file": "dist/youtube-post-1.1.0.zip",
+   "sha256": "3562022e656e2a7e333cbc9dce39e54eb364b5e8ba491a5fa83823191121c17c",
    "summary": "Posts a project's video to your YouTube channel, with its title, chapters and thumbnail, and its Shorts all at once or one a day: when the video is made, or when you say. Adds a step to New project."
   },
   {

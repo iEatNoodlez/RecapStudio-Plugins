@@ -1,7 +1,7 @@
 {
   "id": "youtube-post",
   "name": "Post to YouTube",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "api": 1,
   "summary": "Posts a project's video to your YouTube channel, with its title, chapters and thumbnail, and its Shorts all at once or one a day: when the video is made, or when you say. Adds a step to New project."
 }

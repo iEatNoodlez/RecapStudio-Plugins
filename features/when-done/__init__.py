@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import threading
 import time
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
@@ -157,6 +158,15 @@ def _quote(value) -> str:
     return shlex.quote(value)
 
 
+def _on_server() -> bool:
+    """Recap Studio as a server (0.4 and later): its page comes from its own address, not 127.0.0.1."""
+    try:
+        from recap import system
+    except ImportError:
+        return False
+    return bool(getattr(system, "SERVER", False))
+
+
 def command_line(command: str, values: dict) -> str:
     """The command with its {places} filled in, each quoted (a place already in quotes isn't quoted twice)."""
     for k in PLACES:
@@ -276,9 +286,13 @@ def setup(plugin):
 
     @plugin.router.put("/settings")
     def save(request: Request, changes: dict = Body(..., embed=True)):
-        # the command runs on this PC: only the app's own window may set it, never a web page (it sends an Origin)
+        # the command runs on this PC: only the app's own page may set it, never another web page (it sends an
+        # Origin). A server's page is its own address, behind its login; a reverse proxy passes the address the
+        # browser used as Host (or X-Forwarded-Host)
         origin = request.headers.get("origin")
-        if origin and not re.match(r"https?://(127\.0\.0\.1|localhost)(:\d+)?$", origin):
+        own = {request.headers.get("host", ""), request.headers.get("x-forwarded-host", "")} - {""}
+        if origin and not re.match(r"https?://(127\.0\.0\.1|localhost)(:\d+)?$", origin) and not (
+                _on_server() and urllib.parse.urlparse(origin).netloc in own):
             raise HTTPException(403, "Not from a web page")
         s = settings()
         for k, v in changes.items():

@@ -85,13 +85,29 @@
       } catch { error.textContent = "That file isn't a Google OAuth client's JSON."; }
     } });
     const connect = async () => {
-      try { await api(`${BASE}/connect`, { method: "POST" }); } catch (e) { error.textContent = e.message; return; }
+      let r;
+      try { r = await api(`${BASE}/connect`, { method: "POST" }); } catch (e) { error.textContent = e.message; return; }
+      if (r.server && r.url) window.open(r.url, "_blank", "noopener");  // (a server: in this browser, not the server's)
       const wait = async () => {
         await loadAccount();
         drawSettings(box);
         if (account && account.connect.state === "waiting") setTimeout(wait, 2000);
       };
       wait();
+    };
+    // a server: Google sends the browser to an address on this computer (127.0.0.1) that it can't open; pasted here,
+    // it finishes the sign-in on the server
+    const pasteBox = () => {
+      const address = el("input", { class: "wide", placeholder: "http://127.0.0.1:…/oauth?state=…&code=…", spellcheck: "false" });
+      const send = el("button", { type: "button", class: "ghost small", onclick: async () => {
+        try { await api(`${BASE}/connect/paste`, { method: "POST", json: { address: address.value } }); }
+        catch (e) { error.textContent = e.message; }
+        await loadAccount();
+        drawSettings(box);
+      } }, "Finish connecting");
+      return el("div", {}, el("span", { class: "hint" }, "Recap Studio runs on a server here, so once you allow it, your " +
+        "browser goes to an address starting with http://127.0.0.1 that doesn't open. Copy that whole address from the " +
+        "address bar and paste it here:"), el("div", { class: "key-row" }, address, send));
     };
     const tpl = (key, label, rows) => {
       const t = el("textarea", { rows, class: "wide" });
@@ -128,6 +144,7 @@
       el("span", { class: "field-head" }, "Your channel"),
       el("span", { class: "hint" }, a.channel ? `Connected: ${a.channel}.` : waiting ? "Waiting for you to sign in, in your browser…"
         : a.connect.state === "error" ? `Not connected: ${a.connect.error}` : "Not connected."),
+      waiting && a.server ? pasteBox() : null,
       a.blocked_until ? el("span", { class: "hint warn" }, `YouTube's daily limit is used up: posting carries on after ${a.blocked_until}.`) : null,
       el("div", { class: "key-row" },
         el("button", { type: "button", class: "ghost small", disabled: !a.client || waiting, onclick: connect },

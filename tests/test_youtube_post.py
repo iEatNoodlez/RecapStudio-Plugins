@@ -1,7 +1,8 @@
 """Post to YouTube against a stand-in for Google (fake_google.py), on a scratch data folder: the client, connecting
 (PKCE, the one-time address), posting when the video is made (title, description with chapters, privacy, pieces, a
 dropped piece, an expired sign-in, the thumbnail), Shorts one a day, the daily quota, posting again, subtitles and
-playlists with the wider permission, and disconnecting. Nothing reaches Google."""
+playlists with the wider permission, and disconnecting; on a server, the address Google sends the browser to is
+pasted. Nothing reaches Google."""
 import hashlib
 import json
 import os
@@ -16,6 +17,16 @@ import fake_google
 from helpers import App, check, done, until
 
 google = fake_google.start()
+
+
+def _answers(url: str) -> bool:
+    try:
+        requests.get(url, timeout=2)
+        return True
+    except requests.RequestException:
+        return False
+
+
 G = f"http://127.0.0.1:{google.server_address[1]}"
 app = App(plugins=["youtube-post"], env={"RECAP_YT_AUTH": f"{G}/auth", "RECAP_YT_TOKEN": f"{G}/token", "RECAP_YT_API": G})
 pipeline, plugins, store, DATA = app.pipeline, app.plugins, app.store, app.data
@@ -224,4 +235,23 @@ fake_google.SEEN.update(challenge=q["code_challenge"], scope=q["scope"])
 page = requests.get(q["redirect_uri"], params={"code": "good-code", "state": q["state"]}).text
 check("the API not turned on: said what to turn on", "Turn on the YouTube Data API v3" in page, page[-300:])
 fake_google.CONFIG["api_off"] = False
+
+# ---- on a server: the page opens Google's sign-in, and the address the browser couldn't open is pasted ----
+yt.on_server = lambda: True
+before = len(opened)
+r = requests.post(f"{B}/connect").json()
+check("on a server: the page opens the sign-in, not the server's own browser", r.get("server") is True
+      and r["url"].startswith(f"{G}/auth") and len(opened) == before, r)
+q = {k: v[0] for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(r["url"]).query).items()}
+fake_google.SEEN.update(challenge=q["code_challenge"], scope=q["scope"])
+check("... the account says so while it waits", requests.get(f"{B}/account").json()["server"] is True)
+r = requests.post(f"{B}/connect/paste", json={"address": "https://example.com/somewhere"})
+check("... an address that isn't Google's answer: said", r.status_code == 400 and "127.0.0.1" in r.json()["detail"], r.text)
+r = requests.post(f"{B}/connect/paste", json={"address": f"{q['redirect_uri']}?state=someone-else&code=good-code"})
+check("... nor one for another sign-in", r.status_code == 400 and "wasn't for this sign-in" in r.json()["detail"], r.text)
+r = requests.post(f"{B}/connect/paste", json={"address": f"{q['redirect_uri']}?state={q['state']}&code=good-code&scope=x"})
+a = requests.get(f"{B}/account").json()
+check("... the right one pasted: connected", r.ok and a["channel"] == "Test Channel" and a["connect"]["state"] == "done",
+      (r.text, a))
+check("... and the one-time address closed", until(lambda: not _answers(q["redirect_uri"]), 10))
 done()

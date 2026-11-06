@@ -57,6 +57,16 @@ SCRIPT.write_text("import json, os, sys\n"
                   f"open({str(SAID)!r}, 'w', encoding='utf-8'))\nprint('sent it')\n", encoding="utf-8")
 r = app.put("/api/plugins/when-done/settings", json={"changes": {"command": "calc"}}, headers={"Origin": "https://example.com"})
 check("the command refused from a web page", r.status_code == 403, r.text)
+wd._on_server = lambda: True  # (Recap Studio as a server: its page comes from its own address)
+host = app.base.split("//", 1)[1]
+r = app.put("/api/plugins/when-done/settings", json={"changes": {"ntfy_topic": "x-test"}}, headers={"Origin": f"http://{host}"})
+check("a server's own page may set it", r.status_code == 200, r.text)
+r = app.put("/api/plugins/when-done/settings", json={"changes": {"command": "calc"}}, headers={"Origin": "https://example.com"})
+check("... another web page still can't", r.status_code == 403, r.text)
+r = app.put("/api/plugins/when-done/settings", json={"changes": {"ntfy_topic": ""}},
+            headers={"Origin": "https://recap.example.com", "X-Forwarded-Host": "recap.example.com"})
+check("... and through a reverse proxy, from the address the browser used", r.status_code == 200, r.text)
+wd._on_server = lambda: False
 check("a folder that isn't a full path refused",
       app.put("/api/plugins/when-done/settings", json={"changes": {"folder": "recaps"}}).status_code == 400)
 check("a topic that isn't one refused",

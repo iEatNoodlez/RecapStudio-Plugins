@@ -1,7 +1,7 @@
 {
   "id": "site-check",
   "name": "Site check",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
   "summary": "When a site answers your sources with Cloudflare's check for a person, pass it yourself in a small window: Recap Studio then gets that site's chapters with your pass until it runs out. Needs Recap Studio 0.2.4."
 }

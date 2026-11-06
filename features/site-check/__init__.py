@@ -67,6 +67,16 @@ def _gui():
 
 WHY_NOT = ("Site check needs Recap Studio's own window, and it's open in a browser now: start it the usual way "
            "(its shortcut) to pass a site's check")
+WHY_NOT_SERVER = ("Site check needs Recap Studio's own window, which a server doesn't have: a site behind Cloudflare's "
+                  "check can't be passed here")
+
+
+def _why_not() -> str:
+    try:
+        from recap import system
+        return WHY_NOT_SERVER if getattr(system, "SERVER", False) else WHY_NOT
+    except ImportError:
+        return WHY_NOT
 
 
 def _save() -> None:
@@ -181,7 +191,7 @@ def status() -> dict:
         passes = [{"domain": d, "host": p.get("host", d), "expires": p["expires"], "got": p.get("got"),
                    "clearance": p.get("clearance", True)} for d, p in sorted(_passes.items()) if p["expires"] > now]
         waiting = [{"host": h, **w} for h, w in sorted(_waiting.items(), key=lambda x: -x[1]["at"])]
-    return {"can_open": gui is not None, "why": "" if gui else WHY_NOT, "window": dict(_window),
+    return {"can_open": gui is not None, "why": "" if gui else _why_not(), "window": dict(_window),
             "passes": passes, "waiting": waiting}
 
 
@@ -207,7 +217,7 @@ def setup(plugin):
             raise HTTPException(400, "That isn't a site's address")
         gui = _gui()
         if gui is None:
-            raise HTTPException(409, WHY_NOT)
+            raise HTTPException(409, _why_not())
         with _lock:
             if _window["state"] == "open":
                 raise HTTPException(409, f"{_window['host']}'s window is open already: pass its check or close it first")

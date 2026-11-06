@@ -4,7 +4,9 @@ through YouTube's own API, when the video is made or when you say.
 Google lets a program upload to a channel only through an OAuth client of its own, so each member makes one (a free
 Google Cloud project with the YouTube Data API; Settings → YouTube says how) and connects their channel once. The
 sign-in happens in the browser, on Google's own page, and comes back to a one-time address on this PC (127.0.0.1); only
-the refresh token is kept, in token.json. Until that Google project passes YouTube's API audit, YouTube keeps the
+the refresh token is kept, in token.json. On a server (Recap Studio 0.4's --server), that address is on the server,
+not the member's computer: their browser then shows the address it couldn't open, and they paste it into Settings
+(POST /connect/paste), which finishes the sign-in the same way. Until that Google project passes YouTube's API audit, YouTube keeps the
 videos uploaded through it private.
 
 What's posted, per project:
@@ -164,8 +166,68 @@ def _channel() -> dict:
     return {"id": items[0]["id"], "title": items[0]["snippet"]["title"]}
 
 
+def on_server() -> bool:
+    """Whether Recap Studio runs as a server (0.4 and later): Google's answer then can't reach it by itself."""
+    try:
+        from recap import system
+    except ImportError:
+        return False
+    return bool(getattr(system, "SERVER", False))
+
+
+_pending: dict = {}  # the sign-in under way: its state, verifier and one-time address
+
+
+def finish_connect(query: dict) -> str:
+    """Google's answer (the one-time address's query, parsed): the tokens kept, and the channel looked up. Returns
+    what to tell the member; raises PostError when it didn't work."""
+    c = _client()
+    try:
+        if query.get("error"):
+            raise PostError(f"Google said: {query['error'][0]}")
+        if not _pending or query.get("state", [""])[0] != _pending["state"] or not query.get("code"):
+            raise PostError("That answer wasn't for this sign-in: press Connect again")
+        found = _token_request({"client_id": c["client_id"], "client_secret": c["client_secret"],
+                                "code": query["code"][0], "code_verifier": _pending["verifier"],
+                                "redirect_uri": _pending["redirect"], "grant_type": "authorization_code"})
+        if not found.get("refresh_token"):
+            raise PostError("Google gave no lasting sign-in: remove Recap Studio's access from your Google "
+                            "account (Security → Third-party access) and connect again")
+        _save_token(found)
+        token = _read("token.json", {})
+        try:
+            token["channel"] = _channel()
+        except (PostError, requests.RequestException):
+            (_plugin.data_dir / "token.json").unlink(missing_ok=True)  # (no channel: not connected after all)
+            raise
+        _write("token.json", token)
+        _connect.update(state="done", error="")
+        _pending.clear()
+        return f"Connected to {token['channel']['title']}. You can close this tab and go back to Recap Studio."
+    except requests.RequestException as e:
+        _connect.update(state="error", error=str(e))
+        raise PostError(str(e)) from e
+    except PostError as e:
+        _connect.update(state="error", error=str(e))
+        raise
+
+
+def paste_answer(address: str) -> dict:
+    """A server's sign-in: the address the member's browser couldn't open (Google's answer), pasted."""
+    parsed = urllib.parse.urlparse((address or "").strip())
+    if parsed.path != "/oauth" or not parsed.query:
+        raise PostError("That isn't the address Google sent you to: it starts with http://127.0.0.1 and has "
+                        "code= in it")
+    listener = _pending.get("server")
+    finish_connect(urllib.parse.parse_qs(parsed.query))
+    if listener:  # (Google's answer came this way: the one-time address isn't waited on any more)
+        threading.Thread(target=listener.shutdown, daemon=True).start()
+    return dict(_connect)
+
+
 def start_connect() -> dict:
-    """Open Google's sign-in page in the browser; its answer comes back to a one-time address on this PC."""
+    """Open Google's sign-in page in the browser; its answer comes back to a one-time address on this PC. On a
+    server, the page opens it (its "url") in the member's own browser, and the answer is pasted (paste_answer)."""
     c = _client()
     verifier = secrets.token_urlsafe(64)
     challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b"=").decode()
@@ -178,30 +240,10 @@ def start_connect() -> dict:
                 self.send_response(404)
                 self.end_headers()
                 return
-            ok, text = False, ""
+            ok = False
             try:
-                if q.get("error"):
-                    raise PostError(f"Google said: {q['error'][0]}")
-                if q.get("state", [""])[0] != state or not q.get("code"):
-                    raise PostError("That answer wasn't for this sign-in")
-                found = _token_request({"client_id": c["client_id"], "client_secret": c["client_secret"],
-                                        "code": q["code"][0], "code_verifier": verifier, "redirect_uri": redirect,
-                                        "grant_type": "authorization_code"})
-                if not found.get("refresh_token"):
-                    raise PostError("Google gave no lasting sign-in: remove Recap Studio's access from your Google "
-                                    "account (Security → Third-party access) and connect again")
-                _save_token(found)
-                token = _read("token.json", {})
-                try:
-                    token["channel"] = _channel()
-                except (PostError, requests.RequestException):
-                    (_plugin.data_dir / "token.json").unlink(missing_ok=True)  # (no channel: not connected after all)
-                    raise
-                _write("token.json", token)
-                _connect.update(state="done", error="")
-                ok, text = True, f"Connected to {token['channel']['title']}. You can close this tab and go back to Recap Studio."
-            except (PostError, requests.RequestException) as e:
-                _connect.update(state="error", error=str(e))
+                text, ok = finish_connect(q), True
+            except PostError as e:
                 text = f"Not connected: {e}"
             body = (f'<!doctype html><meta charset="utf-8"><title>Recap Studio</title><body style="font:16px system-ui;'
                     f'padding:32px"><h3>{"✓ " if ok else ""}Recap Studio</h3><p>{text}</p>').encode()
@@ -231,8 +273,12 @@ def start_connect() -> dict:
         if _connect["state"] == "waiting":
             _connect.update(state="error", error="The sign-in wasn't finished in ten minutes")
 
+    _pending.clear()
+    _pending.update(state=state, verifier=verifier, redirect=redirect, server=server)
     _connect.update(state="waiting", error="", url=url)
     threading.Thread(target=serve, daemon=True, name="youtube-signin").start()
+    if on_server():
+        return {**_connect, "server": True}  # (the page opens it: the server's own browser is nobody's)
     webbrowser.open(url)
     return dict(_connect)
 
@@ -687,6 +733,7 @@ def setup(plugin):
                 "client_id": c.get("client_id", "")[:24] + ("…" if len(c.get("client_id", "")) > 24 else ""),
                 "channel": (token.get("channel") or {}).get("title") if token.get("refresh_token") else None,
                 "connect": {k: _connect[k] for k in ("state", "error")}, "blocked_until": _blocked_until(),
+                "server": on_server(),
                 "settings": _settings(), "more": _more()}
 
     @plugin.router.put("/client")
@@ -706,6 +753,10 @@ def setup(plugin):
     @plugin.router.post("/connect")
     def connect():
         return safely(start_connect)
+
+    @plugin.router.post("/connect/paste")
+    def connect_paste(address: str = Body(..., embed=True)):
+        return safely(lambda: paste_answer(address))
 
     @plugin.router.post("/disconnect")
     def drop():
