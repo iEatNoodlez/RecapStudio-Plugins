@@ -1,0 +1,11 @@
+/* Advanced Cutting: Settings → Advanced Cutting and the Video tab's Cut the video… (plugin.js) */
+.ac-ways { display: flex; flex-direction: column; gap: 4px; margin: 4px 0; }
+label.ac-way { display: flex; flex-direction: row; align-items: center; gap: 4px; max-width: none; }
+.ac-num { width: 6em; }
+.ac-ticks { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 4px 0; }
+.ac-now { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.ac-log { font-size: 0.9em; margin: 6px 0; display: grid; gap: 2px; }
+.ac-folder { overflow-wrap: anywhere; }
+.ac-pieces { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; max-height: 30vh; overflow: auto; }
+.ac-pieces > div { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 4px 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.ac-pieces > div:first-child { border-top: none; }

@@ -2,6 +2,16 @@
  "name": "Recap Studio's plugins",
  "plugins": [
   {
+   "id": "advanced-cutting",
+   "kind": "feature",
+   "name": "Advanced Cutting",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/advanced-cutting-1.0.0.zip",
+   "sha256": "c2aa265bf46c9792c1f1fef9c809255fc42d309ccd47b3596e574d61c9eeb65d",
+   "summary": "Cuts a finished video into pieces: by size (each under so many GB), by chapters (so many in each) or by length (so many hours), each starting where a chapter starts, with its own subtitles and YouTube chapter list. Nothing is encoded again. From the Video tab, or each time a project's video is made."
+  },
+  {
    "id": "branding",
    "kind": "feature",
    "name": "Branding",
