@@ -12,6 +12,16 @@
    "summary": "Cuts a finished video into pieces: by size (each under so many GB), by chapters (so many in each) or by length (so many hours), each starting where a chapter starts, with its own subtitles and YouTube chapter list. Nothing is encoded again. From the Video tab, or each time a project's video is made."
   },
   {
+   "id": "autopilot",
+   "kind": "feature",
+   "name": "Autopilot",
+   "version": "1.0.0",
+   "api": 1,
+   "file": "dist/autopilot-1.0.0.zip",
+   "sha256": "784914227c7184f6b2061ee22ead0d3555aee997dde1fd99d4207f1ed610ebb8",
+   "summary": "Sit back: on the days and at the time you choose, it reads a chart of your own sources (Popular, Trending), takes the series still coming out, gets their newest chapters into projects and makes the recaps, one after another. With Post to YouTube connected, the videos go up by themselves."
+  },
+  {
    "id": "branding",
    "kind": "feature",
    "name": "Branding",
