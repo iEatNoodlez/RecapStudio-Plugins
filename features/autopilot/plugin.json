@@ -1,7 +1,7 @@
 {
   "id": "autopilot",
   "name": "Autopilot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
   "summary": "Sit back: on the days and at the time you choose, it reads a chart of your own sources (Popular, Trending), takes the series still coming out, gets their newest chapters into projects and makes the recaps, one after another. With Post to YouTube connected, the videos go up by themselves."
 }

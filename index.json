@@ -15,10 +15,10 @@
    "id": "autopilot",
    "kind": "feature",
    "name": "Autopilot",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/autopilot-1.0.0.zip",
-   "sha256": "784914227c7184f6b2061ee22ead0d3555aee997dde1fd99d4207f1ed610ebb8",
+   "file": "dist/autopilot-1.0.1.zip",
+   "sha256": "0e419c77b3213d23812b9f263d141ee4ece886147921afe8645d3509ff99a8e5",
    "summary": "Sit back: on the days and at the time you choose, it reads a chart of your own sources (Popular, Trending), takes the series still coming out, gets their newest chapters into projects and makes the recaps, one after another. With Post to YouTube connected, the videos go up by themselves."
   },
   {

@@ -48,14 +48,36 @@ _plugin = None
 
 
 def _read(name: str, default: dict) -> dict:
-    try:
-        return {**default, **json.loads((_plugin.data_dir / name).read_text(encoding="utf-8"))}
-    except (OSError, ValueError):
-        return json.loads(json.dumps(default))
+    path = _plugin.data_dir / name
+    for attempt in range(10):
+        try:
+            return {**default, **json.loads(path.read_text(encoding="utf-8"))}
+        except FileNotFoundError:
+            break
+        except (OSError, ValueError):  # (on Windows, a read the moment _save swaps the file in is refused: again)
+            time.sleep(0.02 * (attempt + 1))
+    return json.loads(json.dumps(default))
+
+
+def _save(path, data: dict) -> None:
+    """Written whole or not at all: into a file of its own beside it, then swapped in, as the app's store does. A read
+    at the same moment (the minute's look at the schedule, the page, Post to YouTube) never gets half a file, which
+    it would take for no file at all: an empty state, a run that isn't there."""
+    tmp = path.with_name(f"{path.name}.{threading.get_ident()}.tmp")
+    tmp.write_text(json.dumps(data, indent=1), encoding="utf-8")
+    for attempt in range(20):  # (Windows refuses the swap while something has the file open for a moment)
+        try:
+            tmp.replace(path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                tmp.unlink(missing_ok=True)
+                raise
+            time.sleep(0.05 * (attempt + 1))
 
 
 def _write(name: str, data: dict) -> None:
-    (_plugin.data_dir / name).write_text(json.dumps(data, indent=1), encoding="utf-8")
+    _save(_plugin.data_dir / name, data)
 
 
 def _settings() -> dict:
@@ -182,12 +204,20 @@ def _post_to_youtube(pid: str, privacy: str) -> bool:
     try:
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / "projects.json"
-        try:
-            choices = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            choices = {}
+        choices = None
+        for attempt in range(10):  # (Post to YouTube may be writing it this very moment: half a file isn't its choices)
+            try:
+                choices = json.loads(path.read_text(encoding="utf-8"))
+                break
+            except FileNotFoundError:
+                choices = {}
+                break
+            except (OSError, ValueError):
+                time.sleep(0.05 * (attempt + 1))
+        if not isinstance(choices, dict):  # never write over every project's choices with only this one's
+            return False
         choices[pid] = {**choices.get(pid, {}), "when": "auto", "privacy": privacy}
-        path.write_text(json.dumps(choices, indent=1), encoding="utf-8")
+        _save(path, choices)
         return True
     except OSError:
         return False
