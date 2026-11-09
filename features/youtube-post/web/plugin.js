@@ -35,7 +35,7 @@
     const time = el("input", { type: "time", value: c.daily_at, disabled: c.shorts !== "daily",
       oninput: (e) => { c.daily_at = e.target.value; } });
     return [
-      makesShorts ? null : el("span", { class: "hint" }, "Only if the project makes Shorts (How its video looks: Also cut the video into Shorts)."),
+      makesShorts ? null : el("span", { class: "hint" }, "Only if the project makes Shorts (the Video stage's panel, Captions and Shorts: Cut into Shorts)."),
       pills("yt-shorts", SHORTS, c.shorts, (v) => { c.shorts = v; draw(); }, cls),
       about(SHORTS, c.shorts),
       c.shorts === "daily" ? el("label", { class: "pk-line" }, "At", time) : null,

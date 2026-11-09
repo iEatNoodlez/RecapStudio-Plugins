@@ -223,8 +223,8 @@
     const ready = st.user && st.items.length && (!s.audited || privacy) && !creatorError;
     // what it posts: the whole video (or its parts), its Shorts, or Advanced Cutting's pieces, as pills
     const SETS = [["video", n.video > 1 ? `Its ${n.video} parts` : "The whole video", n.video ? "" : "Not made yet."],
-      ["shorts", `Its Shorts (${n.shorts})`, n.shorts ? "" : "None yet: the project cuts them when How its video looks says so."],
-      ["pieces", `Advanced Cutting's pieces (${n.pieces})`, n.pieces ? "" : "None yet: Cut the video… (by length, for TikTok)."]];
+      ["shorts", `Its Shorts (${n.shorts})`, n.shorts ? "" : "None yet: set Cut into Shorts in the Video stage's panel (Captions and Shorts), then make the video again."],
+      ["pieces", `Advanced Cutting's pieces (${n.pieces})`, n.pieces ? "" : "None yet: Cut the video… at the Video stage (by length: 0.15 hours is 9 minutes, under TikTok's limit)."]];
     const pills = el("div", { class: "pk-pills" }, ...SETS.map(([id, text]) => el("label", { class: `pk-pill${st.set === id ? " on" : ""}` },
       el("input", { type: "radio", name: "tt-set2", checked: st.set === id, onchange: () => pickSet(id) }), text)));
     const chosen = SETS.find(([id]) => id === st.set);

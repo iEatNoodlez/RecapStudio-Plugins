@@ -75,10 +75,10 @@
    "id": "post-to-tiktok",
    "kind": "feature",
    "name": "Post to TikTok",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "api": 1,
-   "file": "dist/post-to-tiktok-1.0.0.zip",
-   "sha256": "f917b029079e78914ac265d8b73aa0852c41336e038fe15a72eccd3ab4ab772d",
+   "file": "dist/post-to-tiktok-1.0.1.zip",
+   "sha256": "c6436cf57639371158bc625f2cede9af51f1eb8bad77934e96a737e730916d0f",
    "summary": "Posts a project's video to your TikTok account, or its parts, Shorts or Advanced Cutting's pieces as a numbered series joined by one hashtag: when the video is made, or when you say. Needs a TikTok developer app of your own."
   },
   {
@@ -145,10 +145,10 @@
    "id": "youtube-post",
    "kind": "feature",
    "name": "Post to YouTube",
-   "version": "1.2.0",
+   "version": "1.2.1",
    "api": 1,
-   "file": "dist/youtube-post-1.2.0.zip",
-   "sha256": "ade655fd386951e23dc0d09ffead2de5eabae6b68ddad3f328d07b517b745914",
+   "file": "dist/youtube-post-1.2.1.zip",
+   "sha256": "6a67939cdd614617fbcd3e0200c25d3c2444059bdc6653fadba2dd03193fb95c",
    "summary": "Posts a project's video to your YouTube channel, with its title, chapters and thumbnail, and its Shorts all at once or one a day: when the video is made, or when you say. Adds a step to New project."
   },
   {

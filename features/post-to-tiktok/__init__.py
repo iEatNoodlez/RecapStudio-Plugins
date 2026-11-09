@@ -80,15 +80,15 @@ DEFAULT_SETTINGS = {"audited": False, "privacy": "", "set": "video", "comments":
                     "stitch": False, "aigc": False, "disclosure": "none", "hashtags": ""}
 DEFAULT_CHOICE = {"set": "", "privacy": "", "title": "", "description": "", "tag": ""}
 WHY = {"video": "No video yet: Make the recap renders it",
-       "shorts": "No Shorts yet: the project cuts them when How its video looks says Also cut the video into Shorts",
-       "pieces": "No pieces yet: Advanced Cutting makes them (Cut the video… in the Video tab)"}
+       "shorts": "No Shorts yet: set Cut into Shorts in the Video stage's panel (Captions and Shorts) and make the video again",
+       "pieces": "No pieces yet: Advanced Cutting makes them (Cut the video… at the Video stage)"}
 HINTS = {  # TikTok's reasons that need you to do something, in plain words
     "unaudited_client_can_only_post_to_private_accounts":
         "Until TikTok audits your app, it only takes posts to a private account: in TikTok, Settings and privacy → "
         "Privacy → Private account, then post again",
     "privacy_level_option_mismatch":
-        "TikTok doesn't offer that choice of who sees it to this account now: choose again (Post to TikTok… in the "
-        "Video tab)",
+        "TikTok doesn't offer that choice of who sees it to this account now: choose again (Post to TikTok… at "
+        "Publish)",
     "spam_risk_user_banned_from_posting": "TikTok isn't letting this account post for now",
     "scope_not_authorized":
         "TikTok wasn't given permission to post: connect again and allow it. On TikTok for Developers, your app needs "
@@ -704,7 +704,7 @@ def _privacy(choice: dict, s: dict, info: dict | None = None) -> str:
         return "SELF_ONLY"
     want = choice.get("privacy") or s["privacy"]
     if want not in PRIVACY:
-        raise PostError("Choose who sees it first (Post to TikTok… in the Video tab, or Settings → Post to TikTok)")
+        raise PostError("Choose who sees it first (Post to TikTok… at Publish, or Settings → Post to TikTok)")
     if info is not None and info["privacy"] and want not in info["privacy"]:
         offered = ", ".join(PRIVACY[x] for x in info["privacy"])
         raise PostError(f"TikTok doesn't offer \"{PRIVACY[want]}\" to this account now (it offers {offered}): choose again",
@@ -1038,7 +1038,7 @@ def _look() -> None:
             if time.time() - since > WAIT_PIECES:
                 _set_pending(pid, False)
                 _log(p["name"], "Not posted: Advanced Cutting's pieces of the new video never came (Cut the video… "
-                                "in the Video tab, then Post to TikTok…)")
+                                "at the Video stage, then Post to TikTok…)")
             continue
         try:
             _plugin.run(pid, "post")

@@ -1,7 +1,7 @@
 {
   "id": "post-to-tiktok",
   "name": "Post to TikTok",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "api": 1,
   "summary": "Posts a project's video to your TikTok account, or its parts, Shorts or Advanced Cutting's pieces as a numbered series joined by one hashtag: when the video is made, or when you say. Needs a TikTok developer app of your own."
 }
