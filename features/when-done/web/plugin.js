@@ -1,6 +1,6 @@
-// When a video is done, a Recap Studio feature plugin: its section in Settings (copy to a folder, run a command, tell
-// your phone), a choice in Project settings to leave a project out, and "Do it now" with the finished video's buttons.
-// The doing is __init__.py's.
+// When a video is done, a Recap Studio feature plugin: its section in Settings (a card each: copy to a folder, run a
+// command, tell your phone; then what it did), a choice in Project settings to leave a project out, and "Do it now"
+// with the finished video's buttons. The doing is __init__.py's.
 (() => {
   const R = window.RecapStudio;
   if (!R || R.version < 1) return;
@@ -38,41 +38,44 @@
       ...extra, onchange: (e) => save({ [key]: e.target.value }) });
     const tick = (key, label) => el("label", { class: "check" },
       el("input", { type: "checkbox", checked: !!s[key], onchange: (e) => save({ [key]: e.target.checked }) }), ` ${label}`);
-    box.replaceChildren(...[  // (the rows left out are null)
-      el("span", { class: "hint" }, "Done each time a project's video is made (Make the recap or Render video), " +
-        "while Recap Studio is open. A project can be left out in its Project settings."),
-      el("h4", {}, "Copy it to a folder"),
-      el("div", { class: "key-row" }, text("folder", `Off; or a folder, e.g. ${st.windows === false ? "/mnt/nas/Finished recaps" : "D:\\Finished recaps"}`),
+    const chip = (on) => el("span", { class: `side-chip${on ? " ok" : ""}` }, on ? "on" : "off");
+    const linux = st.windows === false;
+    const copy = el("section", { class: "pk-card" }, el("h3", {}, "Copy it to a folder", chip(s.folder)),
+      el("div", { class: "pk-row" }, text("folder", `Off; or a folder, e.g. ${linux ? "/mnt/nas/Finished recaps" : "D:\\Finished recaps"}`),
         el("button", { type: "button", class: "ghost small", onclick: async () => {
           const picked = await R.pickFolder(s.folder);
           if (picked) save({ folder: picked });
         } }, "Choose…")),
-      el("div", { class: "wd-ticks" }, tick("own_folder", "In a folder named after the project"),
-        tick("srt", "Its subtitles (.srt)"), tick("thumbnail", "Its thumbnail"), tick("shorts", "Its Shorts")),
-      el("h4", {}, "Run a command"),
-      text("command", st.windows === false ? "Off; or a command, e.g. rsync -a {copy} nas:recaps/"
-        : "Off; or a command, e.g. robocopy {folder} \\\\nas\\recaps *.mp4", { class: "wd-command" }),
+      el("div", { class: "pk-ticks" }, tick("own_folder", "In a folder named after the project"),
+        tick("srt", "Its subtitles (.srt)"), tick("thumbnail", "Its thumbnail"), tick("shorts", "Its Shorts")));
+    const command = el("section", { class: "pk-card" }, el("h3", {}, "Run a command", chip(s.command)),
+      text("command", linux ? "Off; or a command, e.g. rsync -a {copy} nas:recaps/"
+        : "Off; or a command, e.g. robocopy {folder} \\\\nas\\recaps *.mp4", { class: "pk-mono" }),
       el("span", { class: "hint" }, "Run in the project's output folder. Filled in, each in quotes: " +
         st.places.map((p) => `{${p}}`).join(" ") + " ({copy}: the copied video; {videos}: every part). They're also " +
-        "in the variables RECAP_VIDEO, RECAP_PROJECT and so on."),
-      el("h4", {}, "Tell your phone"),
+        "in the variables RECAP_VIDEO, RECAP_PROJECT and so on."));
+    const phone = el("section", { class: "pk-card" }, el("h3", {}, "Tell your phone", chip(s.ntfy_topic || s.webhook)),
       el("span", { class: "hint" }, "With ntfy (a free app for Android and iPhone): install it, subscribe to the topic " +
         "below, and this PC posts to it. Anyone who knows a topic's name can read it, so keep the one made up here. " +
         "Or a Discord or Slack webhook (any other gets the details as JSON)."),
-      el("div", { class: "key-row" }, el("span", {}, "ntfy topic"), text("ntfy_topic", "Off"),
-        s.ntfy_topic ? null : el("button", { type: "button", class: "ghost small", onclick: () => save({ ntfy_topic: randomTopic() }) },
-          "Make one up")),
-      el("div", { class: "key-row" }, el("span", {}, "ntfy server"), text("ntfy_server", "https://ntfy.sh")),
-      el("div", { class: "key-row" }, el("span", {}, "Webhook"), text("webhook", "Off; or https://discord.com/api/webhooks/…")),
-      el("div", { class: "wd-ticks" }, tick("tell_done", "When a video is done"),
+      el("div", { class: "pk-grid fill" },
+        el("span", {}, "ntfy topic"), el("div", { class: "pk-row" }, text("ntfy_topic", "Off"),
+          s.ntfy_topic ? null : el("button", { type: "button", class: "ghost small", onclick: () => save({ ntfy_topic: randomTopic() }) }, "Make one up")),
+        el("span", {}, "ntfy server"), text("ntfy_server", "https://ntfy.sh"),
+        el("span", {}, "Webhook"), text("webhook", "Off; or https://discord.com/api/webhooks/…")),
+      el("div", { class: "pk-ticks" }, tick("tell_done", "When a video is done"),
         tick("tell_asks", "When a recap stops to ask you something"), tick("tell_failed", "When a recap fails")),
-      s.ntfy_topic || s.webhook ? el("div", { class: "key-row" }, el("button", { type: "button", class: "ghost small",
+      s.ntfy_topic || s.webhook ? el("div", { class: "pk-actions" }, el("button", { type: "button", class: "ghost small",
         onclick: async () => {
           try { await api(`${BASE}/test`, { method: "POST" }); error.textContent = ""; R.notify("Sent: check your phone.", "Test sent"); }
           catch (e) { error.textContent = e.message; }
-        } }, "Send a test")) : null,
-      error,
-      ...(st.log.length ? [el("div", { class: "wd-log" }, ...st.log.slice(0, 8).map((x) =>
-        el("div", {}, el("span", { class: "muted" }, x.at), " ", el("b", {}, x.project), ": ", x.note)))] : [])].filter(Boolean));
+        } }, "Send a test")) : null);
+    const log = st.log.length ? el("section", { class: "pk-card" }, el("h3", {}, "What it did"),
+      el("div", { class: "pk-log" }, ...st.log.slice(0, 8).map((x) => el("div", {}, el("span", { class: "pk-at" }, x.at),
+        el("span", {}, el("b", {}, `${x.project}: `), x.note))))) : null;
+    box.replaceChildren(...[
+      el("span", { class: "hint" }, "Done each time a project's video is made (Make the recap or Render video), " +
+        "while Recap Studio is open. A project can be left out in its own settings, beside its stages."),
+      copy, command, phone, error, log].filter(Boolean));
   }
 })();

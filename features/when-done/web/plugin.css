@@ -1,3 +1,1 @@
-.wd-ticks { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 4px 0; }
-.wd-command { width: 100%; font-family: Consolas, monospace; }
-.wd-log { font-size: 0.9em; margin: 6px 0; display: grid; gap: 2px; }
+/* When a video is done: its Settings section is built from the app's plugin kit (.pk-*); nothing of its own */

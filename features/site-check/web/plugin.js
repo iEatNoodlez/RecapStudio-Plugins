@@ -70,36 +70,39 @@
     const go = () => { if (field.value.trim()) openSite(field.value.trim()); };
     field.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); go(); } });
     const open = st.window.state === "open";
-    box.replaceChildren(...[
-      el("span", { class: "hint" }, "When a site answers your sources with Cloudflare's check for a person, pass it "
-        + "yourself in a small window: Recap Studio then gets that site's chapters with your pass until it runs out "
-        + "(often 30 minutes, sometimes days: the site decides). Only ever when you open the window."),
-      st.can_open ? null : el("span", { class: "error" }, `${st.why}.`),
-      open ? el("span", { class: "muted" }, `${st.window.message}…`) : null,
-      el("b", {}, "Passes"),
-      st.passes.length ? el("div", { class: "src-plugins" }, ...st.passes.map((p) => el("div", { class: "src-plugin" },
-        el("b", {}, p.domain),
-        el("span", { class: "muted" }, `until ${time(p.expires)}${p.clearance ? "" : " · the site gave no pass of its own, only its cookies"}`),
-        el("button", { type: "button", class: "ghost small", onclick: async () => {
-          try { draw(await api(`${BASE}/passes/${encodeURIComponent(p.domain)}`, { method: "DELETE" })); }
-          catch (e) { R.notify(e.message); }
-        } }, "Forget"))))
-        : el("span", { class: "muted" }, "None yet."),
-      st.waiting.length ? el("b", {}, "Sites that asked") : null,
-      st.waiting.length ? el("div", { class: "src-plugins" }, ...st.waiting.map((w) => el("div", { class: "src-plugin" },
-        el("b", {}, w.host),
-        el("span", { class: w.stubborn ? "error" : "muted" }, w.stubborn ? STUBBORN
-          : [w.source, `asked ${time(w.at)}`, w.refused ? "didn't take its pass" : ""].filter(Boolean).join(" · ")),
-        el("span", {},
+    const forget = (p) => el("button", { type: "button", class: "ghost small", onclick: async () => {
+      try { draw(await api(`${BASE}/passes/${encodeURIComponent(p.domain)}`, { method: "DELETE" })); }
+      catch (e) { R.notify(e.message); }
+    } }, "Forget");
+    const passes = el("section", { class: "pk-card" }, el("h3", {}, "Passes",
+      el("span", { class: `side-chip${st.passes.length ? " ok" : ""}` }, st.passes.length ? String(st.passes.length) : "none")),
+    st.passes.length ? el("div", { class: "pk-list" }, ...st.passes.map((p) => el("div", { class: "pk-item" },
+      el("div", { class: "pk-main" }, el("b", {}, p.domain), el("span", { class: "muted" }, `until ${time(p.expires)}`)),
+      el("span", { class: "pk-tools" }, forget(p)),
+      p.clearance ? null : el("span", { class: "pk-note" }, "The site gave no pass of its own, only its cookies."))))
+      : el("span", { class: "pk-empty" }, "None yet: a pass is kept here once you've passed a site's check."));
+    const asked = st.waiting.length ? el("section", { class: "pk-card" }, el("h3", {}, "Sites that asked"),
+      el("div", { class: "pk-list" }, ...st.waiting.map((w) => el("div", { class: "pk-item" },
+        el("div", { class: "pk-main" }, el("b", {}, w.host),
+          el("span", { class: "muted" }, [w.source, `asked ${time(w.at)}`, w.refused ? "didn't take its pass" : ""].filter(Boolean).join(" · "))),
+        el("span", { class: "pk-tools" },
           w.stubborn ? null : el("button", { type: "button", class: "ghost small", disabled: !st.can_open || open,
             onclick: () => openSite(w.url || `https://${w.host}/`) }, "Open the site"),
           el("button", { type: "button", class: "ghost small", title: "Take it off this list", onclick: async () => {
             try { draw(await api(`${BASE}/waiting/${encodeURIComponent(w.host)}`, { method: "DELETE" })); }
             catch (e) { R.notify(e.message); }
-          } }, "×"))))) : null,
-      st.can_open ? el("b", {}, "Pass a site's check now") : null,
-      st.can_open ? el("div", { class: "src-row" }, field,
-        el("button", { type: "button", class: "ghost small", disabled: open, onclick: go }, "Open the site")) : null,
-    ].filter(Boolean));
+          } }, "×")),
+        w.stubborn ? el("span", { class: "pk-note pk-bad" }, `${w.host} ${STUBBORN}`) : null)))) : null;
+    const now = st.can_open ? el("section", { class: "pk-card" }, el("h3", {}, "Pass a site's check now"),
+      el("span", { class: "hint" }, "Ahead of time, for a site you know asks: its window opens here, and the pass is kept."),
+      el("div", { class: "pk-row" }, field,
+        el("button", { type: "button", class: "ghost small", disabled: open, onclick: go }, "Open the site")),
+      open ? el("div", { class: "pk-status" }, el("span", { class: "pk-dot on" }), el("span", {}, `${st.window.message}…`)) : null) : null;
+    box.replaceChildren(...[
+      el("span", { class: "hint" }, "When a site answers your sources with Cloudflare's check for a person, pass it "
+        + "yourself in a small window: Recap Studio then gets that site's chapters with your pass until it runs out "
+        + "(often 30 minutes, sometimes days: the site decides). Only ever when you open the window."),
+      st.can_open ? null : el("span", { class: "error" }, `${st.why}.`),
+      passes, asked, now].filter(Boolean));
   }
 })();

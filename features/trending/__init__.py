@@ -211,10 +211,40 @@ def trending(site: str, order: str, kind: str = "all", genre: str = "", status: 
         return found
 
 
+def _read_json(path):
+    """A JSON file, whole, or None when there's none. A read that lands as _write_json swaps the file in (refused
+    for a moment on Windows) is tried again, rather than taken for no file."""
+    for attempt in range(10):
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return None
+        except (OSError, ValueError):
+            time.sleep(0.02 * (attempt + 1))
+    return None
+
+
+def _write_json(path, data) -> None:
+    """Written whole or not at all: to a file of its own beside it, then swapped in, as the app's store does, so a
+    read at the same moment never gets half a file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.{threading.get_ident()}.tmp")
+    tmp.write_text(json.dumps(data, indent=1), encoding="utf-8")
+    for attempt in range(20):  # (Windows refuses the swap while something has the file open for a moment)
+        try:
+            tmp.replace(path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                tmp.unlink(missing_ok=True)
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
 def _settings() -> dict:
     try:
-        kept = json.loads((_plugin.data_dir / "settings.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError, AttributeError):
+        kept = _read_json(_plugin.data_dir / "settings.json") or {}
+    except AttributeError:  # (before setup: no data folder yet)
         kept = {}
     return {"chapters": kept.get("chapters") if kept.get("chapters") in CHAPTERS else "show"}
 
@@ -231,8 +261,7 @@ def setup(plugin):
     def save_settings(chapters: str = Body(..., embed=True)):
         if chapters not in CHAPTERS:
             raise HTTPException(400, f"{chapters} isn't one of {', '.join(CHAPTERS)}")
-        plugin.data_dir.mkdir(parents=True, exist_ok=True)
-        (plugin.data_dir / "settings.json").write_text(json.dumps({"chapters": chapters}), encoding="utf-8")
+        _write_json(plugin.data_dir / "settings.json", {"chapters": chapters})
         return _settings()
 
     @plugin.router.get("/options")

@@ -8,6 +8,7 @@
 .tr-main.picked { grid-template-columns: 1fr 320px; }
 .tr-list { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .tr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; overflow: auto; height: 60vh; align-content: start; padding: 2px; }
+.tr-more { grid-column: 1 / -1; justify-self: center; margin: 4px 0; }
 .tr-card { position: relative; }
 .tr-card.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .tr-card small { font-size: 11px; }

@@ -1,3 +1,1 @@
-/* Watched folder: its Settings section (plugin.js) */
-.wf-example { font-family: ui-monospace, Consolas, monospace; font-size: 11px; overflow-wrap: anywhere; }
-.wf-log { display: flex; flex-direction: column; gap: 2px; font-size: 12px; max-height: 140px; overflow: auto; }
+/* Watched folder: its Settings section is built from the app's plugin kit (.pk-*); nothing of its own */

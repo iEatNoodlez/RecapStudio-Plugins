@@ -1,6 +1,9 @@
 /* Find the series: the search, the series picked and its characters (plugin.js) */
 .fs-box { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-.fs-box .key-row input { flex: 1; }
+.fs-search { max-width: none; }  /* (the app's .np-search: a magnifier, the words, Search at its right) */
+.fs-search input.fs-query { flex: 1; min-width: 0; border: 0; outline: 0; padding: 0; font: inherit; font-size: 15px; color: var(--text); background: transparent; }
+.fs-search button { flex: none; }
+.np-section .fs-box { margin-bottom: 4px; }
 .fs-source { font-size: 12px; margin-top: 4px; }
 .fs-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; max-height: 34vh; overflow: auto; }
 .fs-results .src-card small { font-size: 11px; }

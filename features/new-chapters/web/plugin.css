@@ -1,7 +1,1 @@
-.nc-when { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 6px 0; }
-.nc-when > span:first-child { min-width: 5em; }
-.nc-days { display: inline-flex; flex-wrap: wrap; gap: 2px 10px; }
-.nc-projects { display: grid; gap: 6px; margin: 8px 0; }
-.nc-project { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
-.nc-project b { min-width: 12em; }
-.nc-log { font-size: 0.9em; margin: 6px 0; display: grid; gap: 2px; }
+/* New chapters on a schedule: its Settings section is built from the app's plugin kit (.pk-*); nothing of its own */

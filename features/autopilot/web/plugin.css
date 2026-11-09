@@ -1,25 +1,9 @@
-/* Autopilot: the dialog's lists and form */
+/* Autopilot: the cockpit and its Settings card are built from the app's plugin kit (.pk-*); these are its own few */
 .ap-dialog .setup-body { min-height: 18em; }
-.ap-head { display: flex; align-items: baseline; gap: 1em; flex-wrap: wrap; }
-.ap-head .ap-state { font-weight: 600; }
-.ap-views { display: flex; gap: 0.4em; margin: 0.3em 0 0.8em; }
-.ap-list { display: flex; flex-direction: column; gap: 0.3em; margin: 0.4em 0 0.8em; }
-.ap-row { display: grid; grid-template-columns: 1.6em 1fr auto; gap: 0.3em 0.6em; align-items: baseline;
-          padding: 0.35em 0.5em; border-radius: 0.4em; background: var(--panel, rgba(127, 127, 127, 0.08)); }
-.ap-row .ap-n { opacity: 0.6; }
-.ap-row .ap-status { white-space: nowrap; font-size: 0.92em; }
-.ap-row .ap-note { grid-column: 2 / 4; opacity: 0.75; font-size: 0.9em; }
-.ap-row.ap-done .ap-status { color: var(--ok, #3a9d5d); }
-.ap-row.ap-failed .ap-status, .ap-row.ap-left .ap-status { color: var(--danger, #c0392b); }
-.ap-row.ap-getting .ap-status, .ap-row.ap-recapping .ap-status { color: var(--accent, #4a7bd0); }
-.ap-notes { margin: 0.2em 0 0.8em 1.2em; padding: 0; font-size: 0.9em; opacity: 0.8; }
-.ap-log { font-size: 0.9em; }
-.ap-log .ap-at { opacity: 0.6; white-space: nowrap; margin-right: 0.6em; }
-.ap-grid { display: grid; grid-template-columns: max-content 1fr; gap: 0.5em 1em; align-items: center; margin: 0.4em 0 0.8em; }
-.ap-grid input[type="number"] { width: 5em; }
-.ap-grid textarea { width: 100%; min-height: 3.5em; }
-.ap-charts { display: flex; flex-direction: column; gap: 0.2em; margin: 0.2em 0 0.8em; max-height: 14em; overflow: auto; }
-.ap-charts .ap-source { font-weight: 600; margin-top: 0.4em; }
-.ap-charts label { margin-left: 1em; }
-.ap-days { display: flex; gap: 0.3em; flex-wrap: wrap; }
-.ap-days label { padding: 0.15em 0.5em; border-radius: 0.3em; background: var(--panel, rgba(127, 127, 127, 0.08)); }
+.ap-dialog .setup-page .pk-list { max-height: 44vh; }
+.ap-notes { margin: 0 0 0 1.2em; padding: 0; font-size: 12px; color: var(--muted); }
+.ap-charts { display: flex; flex-direction: column; gap: 8px; max-height: 16em; overflow: auto; }
+.ap-source-row { display: flex; flex-direction: column; gap: 4px; }
+.ap-source { font-weight: 600; font-size: 13px; }
+.ap-lines { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.pk-card textarea { width: 100%; min-height: 3.5em; }

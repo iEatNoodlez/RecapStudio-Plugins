@@ -1,7 +1,7 @@
 {
   "id": "advanced-cutting",
   "name": "Advanced Cutting",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "api": 1,
   "summary": "Cuts a finished video into pieces: by size (each under so many GB), by chapters (so many in each) or by length (so many hours), each starting where a chapter starts, with its own subtitles and YouTube chapter list. Nothing is encoded again. From the Video tab, or each time a project's video is made."
 }

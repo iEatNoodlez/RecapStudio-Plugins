@@ -1,7 +1,7 @@
 {
   "id": "branding",
   "name": "Branding",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "api": 1,
   "summary": "Your channel's logo in a corner of every video, and an intro and an outro (a clip or a picture) before and after each part. Set once in Settings; each project can leave either out."
 }

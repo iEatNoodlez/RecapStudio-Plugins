@@ -79,17 +79,43 @@ def _why_not() -> str:
         return WHY_NOT
 
 
+def _read_json(path):
+    """A JSON file, whole, or None when there's none. A read that lands as _write_json swaps the file in (refused
+    for a moment on Windows) is tried again, rather than taken for no file."""
+    for attempt in range(10):
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return None
+        except (OSError, ValueError):
+            time.sleep(0.02 * (attempt + 1))
+    return None
+
+
+def _write_json(path, data) -> None:
+    """Written whole or not at all: to a file of its own beside it, then swapped in, as the app's store does, so a
+    read at the same moment never gets half a file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.{threading.get_ident()}.tmp")
+    tmp.write_text(json.dumps(data, indent=1), encoding="utf-8")
+    for attempt in range(20):  # (Windows refuses the swap while something has the file open for a moment)
+        try:
+            tmp.replace(path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                tmp.unlink(missing_ok=True)
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
 def _save() -> None:
-    _plugin.data_dir.mkdir(parents=True, exist_ok=True)
-    (_plugin.data_dir / "passes.json").write_text(json.dumps(_passes, indent=1), encoding="utf-8")
+    _write_json(_plugin.data_dir / "passes.json", _passes)
 
 
 def _restore() -> None:
     """The passes kept from before that haven't run out, given to the app again."""
-    try:
-        kept = json.loads((_plugin.data_dir / "passes.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        kept = {}
+    kept = _read_json(_plugin.data_dir / "passes.json") or {}
     now = time.time()
     with _lock:
         _passes.clear()

@@ -30,12 +30,12 @@
   const filters = el("div", { class: "tr-filters" });
   const main = el("div", { class: "tr-main" });
   const foot = el("span", { class: "muted tr-foot" });
-  const moreButton = el("button", { type: "button", class: "ghost", onclick: () => load(page + 1) }, "Show more");
-  dlg.append(el("form", { method: "dialog", class: "import-form" },
+  const moreButton = el("button", { type: "button", class: "ghost tr-more", onclick: () => load(page + 1) }, "Show more");
+  dlg.append(el("form", { method: "dialog", class: "import-form", novalidate: true },
     el("div", { class: "setup-head" }, el("h2", {}, "Trending"), head),
     filters, main,
-    el("div", { class: "import-actions" }, foot, el("span", { class: "grow" }), moreButton,
-      el("button", { value: "cancel", class: "ghost" }, "Close"))));
+    el("div", { class: "import-actions" }, foot, el("span", { class: "grow" }),
+      el("button", { value: "cancel", class: "ghost", formnovalidate: true }, "Close"))));
   document.body.append(dlg);
 
   async function open() {
@@ -211,10 +211,14 @@
     } }, ...[["show", "Look for them in my sources, and show what's found"],
       ["get", "Get them all straight away, when one of my sources has a series called that"],
       ["off", "Don't look for them"]].map(([v, text]) => el("option", { value: v, selected: settings.chapters === v }, text)));
-    box.replaceChildren(el("label", {}, "After Make a project, its chapters ", choice),
-      el("span", { class: "hint" }, "Your sources are the ones in Settings → Sources: a plugin of your own, or a " +
-        "Suwayomi server. Recap Studio's plugin list has none, since it gets no chapters itself. All of them that can " +
-        "search are asked, by the series' title, then its other titles."));
+    box.replaceChildren(
+      el("span", { class: "hint" }, "Trending… in the rail lists the series trending now on AniList and looked at most on " +
+        "MangaUpdates, to pick the next one to recap. Make a project opens New project for one."),
+      el("section", { class: "pk-card" }, el("h3", {}, "After Make a project"),
+        el("div", { class: "pk-fields" }, el("label", { class: "pk-field" }, "Its chapters", choice)),
+        el("span", { class: "hint" }, "Your sources are the ones in Settings → Sources: a plugin of your own, or a " +
+          "Suwayomi server. Recap Studio's plugin list has none, since it gets no chapters itself. All of them that can " +
+          "search are asked, by the series' title, then its other titles.")));
   });
 
   function drawMain() {
@@ -224,7 +228,7 @@
       el("div", { class: "tr-list" },
         note ? el("span", { class: failed ? "error" : "hint" }, note) : null,
         yours ? el("span", { class: "hint" }, `${yours} of these ${yours === 1 ? "is" : "are"} already a project of yours (marked).`) : null,
-        el("div", { class: "tr-grid" }, ...items.map(card))),
+        el("div", { class: "tr-grid" }, ...items.map(card), moreButton)),  // (Show more at the list's end, hidden when there's no more)
       picked ? detail(picked) : null].filter(Boolean));
   }
 })();

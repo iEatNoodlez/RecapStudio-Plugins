@@ -1,7 +1,7 @@
 {
   "id": "when-done",
   "name": "When a video is done",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "api": 1,
   "summary": "When a project's video is made: copies it (and its subtitles, thumbnail and Shorts) to a folder, runs a command of yours, and tells your phone through ntfy or a Discord or Slack webhook. It can also tell you when a recap stops to ask you something or fails."
 }

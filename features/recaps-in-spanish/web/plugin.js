@@ -13,16 +13,16 @@
 
   R.addProjectSetting({ key: KEY, label: "Language of the recap", options: OPTIONS, hint: HOW });
 
-  // New project: under the comic's own language
+  // New project: under the comic's own language, laid out as the dialog's own rows
   R.on("new-project-page", ({ page, body, state }) => {
     if (page !== "comic") return;
     const s = state.settings;
     const pick = el("select", { onchange: (e) => { s[KEY] = e.target.value; state.redraw(); } },
       ...OPTIONS.map(([v, t]) => el("option", { value: v }, t)));
     pick.value = s[KEY] || "";
-    body.append(...[el("label", {}, "Language of the recap ", pick),
-      s[KEY] ? el("span", { class: "hint" }, HOW) : null,
-      s[KEY] && s.youtube_safe ? el("span", { class: "hint warn" }, SAFE) : null].filter(Boolean));
+    body.append(...[el("div", { class: "np-row" }, el("label", {}, "Language of the recap", pick)),
+      s[KEY] ? el("span", { class: "np-line" }, HOW) : null,
+      s[KEY] && s.youtube_safe ? el("span", { class: "np-line warn" }, SAFE) : null].filter(Boolean));
   });
 
   // Settings → Recaps in Spanish: which voice
@@ -35,8 +35,9 @@
     el("option", { value: "female" }, "Female: Dora, Dalia or Elvira"), el("option", { value: "male" }, "Male: Alex, Jorge or Álvaro"));
     voice.value = st.voice;
     box.replaceChildren(
-      el("span", { class: "hint" }, "For projects whose recap is in Spanish (New project, or Project settings → Plugins). " + HOW),
-      el("label", {}, "Spanish voice ", voice),
-      el("span", { class: "hint" }, SAFE));
+      el("span", { class: "hint" }, "For projects whose recap is in Spanish (New project, or the project's own settings). " + HOW),
+      el("section", { class: "pk-card" }, el("h3", {}, "The voice"),
+        el("div", { class: "pk-fields" }, el("label", { class: "pk-field" }, "Spanish voice", voice)),
+        el("span", { class: "hint" }, SAFE)));
   });
 })();

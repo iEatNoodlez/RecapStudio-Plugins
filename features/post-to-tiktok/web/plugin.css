@@ -1,0 +1,6 @@
+/* Post to TikTok: Settings → Post to TikTok and the Publish window (plugin.js) are built from the app's plugin kit
+   (.pk-*); these are its own few */
+.tt-file { font-size: 11px; margin-left: 6px; }
+.tt-preview { max-width: 100%; max-height: 180px; border-radius: 8px; background: #000; align-self: flex-start; }
+.tt-consent a { color: var(--accent); }
+.pk-card .tt-consent { margin-left: 0; }

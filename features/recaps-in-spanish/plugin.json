@@ -1,7 +1,7 @@
 {
   "id": "recaps-in-spanish",
   "name": "Recaps in Spanish",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "api": 1,
   "summary": "A project's recap narrated in Spanish (Latin America or Spain): the script, the voice, the subtitles, the captions and the suggested YouTube title, whatever language the comic is in."
 }

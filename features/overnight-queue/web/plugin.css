@@ -1,16 +1,4 @@
-/* Overnight queue: the project list, the times and how each project went (plugin.js) */
-.oq-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; max-height: 40vh; overflow: auto; }
-.oq-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; padding: 6px 10px; border-top: 1px solid var(--line); font-size: 13px; }
-.oq-row:first-child { border-top: none; }
-.oq-row .check { display: flex; flex-direction: row; align-items: center; gap: 8px; max-width: none; }
-.oq-pick:not(.on) b { font-weight: 500; color: var(--muted); }
-.oq-n { color: var(--muted); margin-right: 6px; font-variant-numeric: tabular-nums; }
-.oq-move { display: flex; gap: 4px; }
-.oq-note { grid-column: 1 / -1; font-size: 12px; }
-.oq-status { font-size: 12px; text-align: right; }
-.oq-running .oq-status { color: var(--accent); }
-.oq-done .oq-status { color: var(--ok); }
-.oq-left .oq-status, .oq-paused .oq-status, .oq-left-running .oq-status { color: var(--warn); }
-.oq-failed .oq-status, .oq-cancelled .oq-status { color: var(--danger); }
-label.oq-time { display: flex; flex-direction: row; align-items: center; gap: 8px; max-width: none; }
-.oq-time input[type=time] { width: auto; }
+/* Overnight queue: the window is built from the app's plugin kit (.pk-*); these are its own few */
+.oq-list { max-height: 52vh; }
+.oq-dialog .pk-item label.check .muted { font-size: 12px; }
+.oq-dialog .pk-line input[type=time] { width: auto; }

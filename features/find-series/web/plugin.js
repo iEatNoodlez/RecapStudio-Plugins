@@ -161,7 +161,10 @@
             "Pick another"))));
       return box;
     }
-    box.append(el("div", { class: "key-row" }, input,
+    // the search box, as the app's own search boxes look (a magnifier, the words, Search at its right)
+    const icon = el("span", { class: "np-search-icon", "aria-hidden": "true" });
+    icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>';
+    box.append(el("div", { class: "np-search fs-search" }, icon, input,
       el("button", { type: "button", class: "ghost small", onclick: () => runSearch(f, draw) }, "Search")));
     if (f.status) box.append(el("span", { class: "hint" }, f.status));
     for (const r of f.results || []) {
@@ -243,17 +246,19 @@
 
   // ---- New project: the search on its first page, the characters on its Characters page ----
 
-  let nf = finder(), holder = null, page = "", state = null;
-  const drawNew = () => {  // (into the page being drawn: the dialog shows it right after asking the plugins)
-    if (!holder) return;
-    holder.replaceChildren(page === "comic"
-      ? searchView(nf, drawNew, (source, item) => {
-        pick(nf, source, item, drawNew);
-        state.setName(item.title);
-        if (item.kind) state.setKind(item.kind);
-      }, { castHint: ": tick who to add on the Characters page", chapters: true })
-      : castView(nf, drawNew, new Set(), "The character scan below still runs: it matches the characters it finds in "
-        + "the chapters to these, and suggests names for the rest."));
+  // (New project shows every section at once from 0.4.3, so each page has a slot of its own; before, one at a time)
+  let nf = finder(), holders = {}, state = null;
+  const drawNew = () => {
+    for (const [page, holder] of Object.entries(holders)) {  // (a section's slot is drawn before the section is shown)
+      holder.replaceChildren(page === "comic"
+        ? searchView(nf, drawNew, (source, item) => {
+          pick(nf, source, item, drawNew);
+          state.setName(item.title);
+          if (item.kind) state.setKind(item.kind);
+        }, { castHint: ": tick who to add under Its characters", chapters: true })
+        : castView(nf, drawNew, new Set(), "The character scan below still runs: it matches the characters it finds in "
+          + "the chapters to these, and suggests names for the rest."));
+    }
   };
 
   // The sidebar's box searches: what's typed there is searched for as New project opens.
@@ -261,10 +266,11 @@
     title: "Search for the series to make a project of (Find the series)" });
   R.on("new-project-open", ({ name, series }) => { nf = finder(name); nf.want = series && series.url ? series : null; });
   R.on("new-project-page", (e) => {
-    ({ page, state } = e);
+    const { page } = e;
+    state = e.state;
     if (page !== "comic" && !(page === "characters" && nf.pick && (nf.cast || nf.castStatus))) return;
-    holder = el("div", {});
-    e.body.prepend(holder);
+    holders[page] = el("div", {});
+    e.body.prepend(holders[page]);
     drawNew();
     if (page === "comic" && nf.want) pickWanted(nf, drawNew);  // the series another plugin opened New project for
     else if (page === "comic" && nf.query && !nf.ran) runSearch(nf, drawNew);  // the name typed before Create
