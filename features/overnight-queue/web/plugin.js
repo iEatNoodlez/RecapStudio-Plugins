@@ -14,6 +14,9 @@
   let q = { state: "idle", items: [] }, projects = [], picked = [], timer = null, panel = null;
   let form = { start: "", stop: "", useStart: false, useStop: false, onAsk: "skip" };
   let editing = false;  // making a new queue while the last one's results are still there
+  // (before the panel: addLibraryPanel draws it at once, and drawPanel makes its buttons with btn)
+  const btn = (text, cls, fn) => el("button", { type: "button", class: cls, onclick: fn }, text);
+  const card = (title, ...kids) => el("section", { class: "pk-card" }, el("h3", {}, title), ...kids.filter(Boolean));
 
   const button = R.addButton("sidebar", "Overnight queue", open, { title: "Make the recap for several projects, one after another" });
   // the home page's panel (apps from 0.4.3; an older app has the rail's button alone)
@@ -24,8 +27,6 @@
   dlg.append(el("form", { method: "dialog", class: "import-form", novalidate: true },
     el("div", { class: "setup-head" }, el("h2", {}, "Overnight queue")), body, actions));
   document.body.append(dlg);
-  const btn = (text, cls, fn) => el("button", { type: "button", class: cls, onclick: fn }, text);
-  const card = (title, ...kids) => el("section", { class: "pk-card" }, el("h3", {}, title), ...kids.filter(Boolean));
 
   // the rail's button: its chip says where the queue is (an older app, without chips, gets the words)
   function label() {

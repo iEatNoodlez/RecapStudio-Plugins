@@ -65,10 +65,10 @@
    "id": "overnight-queue",
    "kind": "feature",
    "name": "Overnight queue",
-   "version": "1.1.0",
+   "version": "1.1.1",
    "api": 1,
-   "file": "dist/overnight-queue-1.1.0.zip",
-   "sha256": "077530884918294608dbe5caa7801b538c9f555d187c1830692758705e0284ff",
+   "file": "dist/overnight-queue-1.1.1.zip",
+   "sha256": "8c4c9967446006af7132ed980dd8e8bc88c5e42111fa14f06be93db5608ee05c",
    "summary": "Line up several projects and Make the recap runs them one after another, from a time you choose until a time you choose. A project that stops to ask you something is left for the morning."
   },
   {
